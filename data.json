@@ -3,68 +3,95 @@
     {
       "teamname": "Dirty Money Racing",
       "boatnum": "3",
+      "boat_color": "#f08000",
       "class": "Super Cat",
       "notes": "",
       "driver_name": "Brit Lilly",
-      "driver_wpra": "12345",
-      "driver_rwo": true,
-      "driver_wpramem": true,
+      "driver_apba": "12345",
+      "driver_rwo": false,
+      "driver_apbamem": true,
       "driver_medical": true,
       "driver_dunker": true,
+      "driver_medical_date": "2026-12-13",
+      "driver_dunker_date": "2026-11-24",
+      "driver_rwo_pay": "unpaid",
+      "driver_apba_pay": "paid",
       "throttle_name": "Bill Pyburn",
-      "throttle_wpra": "67890",
+      "throttle_apba": "67890",
       "throttle_rwo": true,
-      "throttle_wpramem": true,
+      "throttle_apbamem": true,
       "throttle_medical": false,
       "throttle_dunker": false,
+      "throttle_medical_date": "2026-03-31",
+      "throttle_dunker_date": "2025-08-12",
+      "throttle_rwo_pay": "unpaid",
+      "throttle_apba_pay": "unpaid",
       "alt_name": "",
-      "alt_wpra": "",
+      "alt_apba": "",
       "alt_rwo": false,
-      "alt_wpramem": false,
+      "alt_apbamem": false,
       "alt_medical": false,
       "alt_dunker": false,
+      "crew": [
+        {
+          "name": "Bobby Adams",
+          "paid": "unpaid"
+        },
+        {
+          "name": "Michelle Andre",
+          "paid": "paid"
+        },
+        {
+          "name": "Crew member #3",
+          "paid": "paid"
+        },
+        {
+          "name": "Crew member #4",
+          "paid": "unpaid"
+        }
+      ],
       "races": {
-        "clearwater": {
-          "registered": true,
-          "payment": "paid"
-        },
-        "miami": {
-          "registered": true,
-          "payment": "unpaid"
-        },
-        "bimini": {
+        "atlanticcity": {
           "registered": false,
           "payment": "unpaid"
         },
-        "nassau": {
+        "michigancity": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "clearwater": {
+          "registered": false,
+          "payment": "paid"
+        },
+        "keywest": {
           "registered": false,
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T15:02:22.887Z",
+      "updated": "2026-04-13T17:10:02.980Z",
       "id": "team_1776092503277"
     }
   ],
   "races": [
     {
+      "id": "atlanticcity",
+      "name": "Atlantic City",
+      "date": "Jun 26-28, 2026"
+    },
+    {
+      "id": "michigancity",
+      "name": "Michigan City",
+      "date": "Jul 31-Aug 2, 2026"
+    },
+    {
       "id": "clearwater",
       "name": "Clearwater",
-      "date": "Sep 26-28, 2025"
+      "date": "Sep 26-28, 2026"
     },
     {
-      "id": "miami",
-      "name": "Miami",
-      "date": "Nov 7-9, 2025"
-    },
-    {
-      "id": "bimini",
-      "name": "Bimini",
-      "date": "Jan 15-17, 2026"
-    },
-    {
-      "id": "nassau",
-      "name": "Nassau",
-      "date": "Mar 4-6, 2026"
+      "id": "keywest",
+      "name": "Key West",
+      "date": "Nov 1-8, 2026"
     }
   ],
   "season": "2025"
