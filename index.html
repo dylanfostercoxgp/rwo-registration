@@ -410,7 +410,7 @@ button,input,select{font-family:inherit;}
         <div class="mem-paid-item"><span class="mem-paid-lbl">APBA Fee &mdash; Throttleman</span><select class="mem-paid-sel" id="f-tapbap"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
       </div>
 
-      <div class="msec">Alternate Driver / Throttleman</div>
+      <div class="msec">Alternate Driver / Throttleman / Navigator</div>
       <div class="fg2">
         <div class="field"><label>Name</label><input type="text" id="f-an" placeholder="Optional"></div>
         <div class="field"><label>APBA #</label><input type="text" id="f-aw" placeholder="Optional"></div>
@@ -420,6 +420,14 @@ button,input,select{font-family:inherit;}
         <label class="dchk"><input type="checkbox" id="f-aw2"> APBA Member</label>
         <label class="dchk"><input type="checkbox" id="f-am"> Medical Cert</label>
         <label class="dchk"><input type="checkbox" id="f-ad"> Dunker Test</label>
+      </div>
+      <div class="date-row">
+        <div class="field"><label>Medical Cert Date</label><input type="date" id="f-amd"></div>
+        <div class="field"><label>Dunker Test Date</label><input type="date" id="f-add"></div>
+      </div>
+      <div class="mem-paid-row">
+        <div class="mem-paid-item"><span class="mem-paid-lbl">RWO Fee &mdash; Alt</span><select class="mem-paid-sel" id="f-arwop"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+        <div class="mem-paid-item"><span class="mem-paid-lbl">APBA Fee &mdash; Alt</span><select class="mem-paid-sel" id="f-aapbap"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
       </div>
 
       <div class="msec">Crew Members</div>
@@ -469,22 +477,22 @@ let DB={teams:[],races:DEFAULT_RACES,season:'2026'};
 let editId=null,curRace='all',saveTimer=null,crewCt=0;
 
 // Preload RWO logo as base64 for PDF rendering (avoids CORS issues with html2pdf)
+const RWO_LOGO_URL='https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png';
 let RWO_LOGO_B64='';
 (async function(){
+  // Method 1: fetch as blob (works if CORS allows)
   try{
-    const resp=await fetch('https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png');
-    const blob=await resp.blob();
-    const reader=new FileReader();
-    reader.onloadend=function(){RWO_LOGO_B64=reader.result;};
-    reader.readAsDataURL(blob);
-  }catch(e){
-    // Fallback: try canvas approach
+    const resp=await fetch(RWO_LOGO_URL);
+    if(resp.ok){const blob=await resp.blob();const reader=new FileReader();reader.onloadend=function(){if(reader.result&&reader.result.length>100)RWO_LOGO_B64=reader.result;};reader.readAsDataURL(blob);return;}
+  }catch(e){}
+  // Method 2: canvas (works if image loads cross-origin)
+  try{
     const img=new Image();img.crossOrigin='anonymous';
     img.onload=function(){try{const c=document.createElement('canvas');c.width=img.width;c.height=img.height;c.getContext('2d').drawImage(img,0,0);RWO_LOGO_B64=c.toDataURL('image/png');}catch(e2){}};
-    img.src='https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png';
-  }
+    img.src=RWO_LOGO_URL;
+  }catch(e){}
 })();
-function logoSrc(){return RWO_LOGO_B64||'https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png';}
+function logoSrc(){return RWO_LOGO_B64||RWO_LOGO_URL;}
 
 // Token stored in localStorage, never in source code (prevents GitHub from revoking it)
 function getToken(){return localStorage.getItem('rwo_gh_token')||'';}
@@ -648,7 +656,7 @@ function crewHTML(t){
 function cardHTML(t){
   const upd=t.updated?new Date(t.updated).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'N/A';
   const bc=t.boat_color||'#111111';
-  return`<div class="team-card" id="card-${t.id}"><div class="card-head"><div class="card-head-l"><div class="boat-badge" style="background:${bc}">${t.boatnum||'?'}</div><div><div class="team-name-t">${t.teamname||'Unnamed'}</div><div class="team-meta">${[t.class,t.notes].filter(Boolean).join(' &mdash; ')}</div></div></div><div class="card-head-r">${racesBadge(t)} ${payBadge(t)}</div></div><div class="card-body-inner">${roleHTML(t,'driver','Driver')}${roleHTML(t,'throttle','Throttleman')}${t.alt_name?roleHTML(t,'alt','Alternate'):''}</div>${crewHTML(t)}<div class="card-foot"><div class="card-foot-note">Updated ${upd}</div><div class="card-actions"><button class="btn-sm btn-sm-ol" onclick="doPrint('${t.id}')">&#128438; Print</button><button class="btn-sm btn-sm-ol" onclick="openEdit('${t.id}')">Edit</button><button class="btn-sm btn-sm-r" onclick="delTeam('${t.id}')">Delete</button></div></div></div>`;
+  return`<div class="team-card" id="card-${t.id}"><div class="card-head"><div class="card-head-l"><div class="boat-badge" style="background:${bc}">${t.boatnum||'?'}</div><div><div class="team-name-t">${t.teamname||'Unnamed'}</div><div class="team-meta">${[t.class,t.notes].filter(Boolean).join(' &mdash; ')}</div></div></div><div class="card-head-r">${racesBadge(t)} ${payBadge(t)}</div></div><div class="card-body-inner">${roleHTML(t,'driver','Driver')}${roleHTML(t,'throttle','Throttleman')}${t.alt_name?roleHTML(t,'alt','Alt / Navigator'):''}</div>${crewHTML(t)}<div class="card-foot"><div class="card-foot-note">Updated ${upd}</div><div class="card-actions"><button class="btn-sm btn-sm-ol" onclick="doPrint('${t.id}')">&#128438; Print</button><button class="btn-sm btn-sm-ol" onclick="openEdit('${t.id}')">Edit</button><button class="btn-sm btn-sm-r" onclick="delTeam('${t.id}')">Delete</button></div></div></div>`;
 }
 function renderAll(){renderStats();renderTeams();}
 function renderStats(){
@@ -708,9 +716,9 @@ function getCrewFromForm(){
   return crew;
 }
 function clearForm(){
-  ['f-tn','f-bn','f-cl','f-nt','f-dn','f-dw','f-tn2','f-tw','f-an','f-aw','f-dmd','f-ddd','f-tmd','f-tdd'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['f-tn','f-bn','f-cl','f-nt','f-dn','f-dw','f-tn2','f-tw','f-an','f-aw','f-dmd','f-ddd','f-tmd','f-tdd','f-amd','f-add'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['f-dr','f-dw2','f-dm','f-dd','f-tr','f-tw2','f-tm','f-td','f-ar','f-aw2','f-am','f-ad'].forEach(id=>{const el=document.getElementById(id);if(el)el.checked=false;});
-  ['f-drwop','f-dapbap','f-trwop','f-tapbap'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='unpaid';});
+  ['f-drwop','f-dapbap','f-trwop','f-tapbap','f-arwop','f-aapbap'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='unpaid';});
   document.getElementById('f-bc').value='#111111';
   document.getElementById('crew-rows').innerHTML='';crewCt=0;
 }
@@ -734,6 +742,8 @@ function openEdit(id){
   document.getElementById('f-an').value=t.alt_name||'';document.getElementById('f-aw').value=t.alt_apba||'';
   document.getElementById('f-ar').checked=!!t.alt_rwo;document.getElementById('f-aw2').checked=!!t.alt_apbamem;
   document.getElementById('f-am').checked=!!t.alt_medical;document.getElementById('f-ad').checked=!!t.alt_dunker;
+  document.getElementById('f-amd').value=t.alt_medical_date||'';document.getElementById('f-add').value=t.alt_dunker_date||'';
+  document.getElementById('f-arwop').value=t.alt_rwo_pay||'unpaid';document.getElementById('f-aapbap').value=t.alt_apba_pay||'unpaid';
   buildCrewRows(t.crew);buildRRG(t);document.getElementById('team-modal').classList.add('open');
 }
 function closeModal(){document.getElementById('team-modal').classList.remove('open');}
@@ -756,6 +766,8 @@ function saveTeam(){
     alt_name:document.getElementById('f-an').value.trim(),alt_apba:document.getElementById('f-aw').value.trim(),
     alt_rwo:document.getElementById('f-ar').checked,alt_apbamem:document.getElementById('f-aw2').checked,
     alt_medical:document.getElementById('f-am').checked,alt_dunker:document.getElementById('f-ad').checked,
+    alt_medical_date:document.getElementById('f-amd').value,alt_dunker_date:document.getElementById('f-add').value,
+    alt_rwo_pay:document.getElementById('f-arwop').value,alt_apba_pay:document.getElementById('f-aapbap').value,
     crew:getCrewFromForm(),races,updated:new Date().toISOString()
   };
   if(editId){const i=DB.teams.findIndex(x=>x.id===editId);if(i>=0){d.id=editId;DB.teams[i]=d;}}
@@ -890,7 +902,11 @@ function buildPrintHTML(t){
       <div class="pc-mp-cell"><div class="pc-mp-lbl">Throttle RWO Fee</div><div class="pc-mp-val">${grtxt((t.throttle_rwo_pay||'unpaid')==='paid','Paid','Unpaid')}</div></div>
       <div class="pc-mp-cell"><div class="pc-mp-lbl">Throttle APBA Fee</div><div class="pc-mp-val">${grtxt((t.throttle_apba_pay||'unpaid')==='paid','Paid','Unpaid')}</div></div>
     </div>
-    <div class="pc-crew-grid">${pcRole('driver','Driver')}${pcRole('throttle','Throttleman')}${t.alt_name?pcRole('alt','Alternate'):''}</div>
+    ${t.alt_name?`<div class="pc-mempaid" style="grid-template-columns:repeat(2,1fr);">
+      <div class="pc-mp-cell"><div class="pc-mp-lbl">Alt RWO Fee</div><div class="pc-mp-val">${grtxt((t.alt_rwo_pay||'unpaid')==='paid','Paid','Unpaid')}</div></div>
+      <div class="pc-mp-cell"><div class="pc-mp-lbl">Alt APBA Fee</div><div class="pc-mp-val">${grtxt((t.alt_apba_pay||'unpaid')==='paid','Paid','Unpaid')}</div></div>
+    </div>`:''}
+    <div class="pc-crew-grid">${pcRole('driver','Driver')}${pcRole('throttle','Throttleman')}${t.alt_name?pcRole('alt','Alt / Navigator'):''}</div>
     ${crewSec}
     ${verifySec}
     <div class="pc-ftr"><div class="pc-ftr-note">Printed ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div><div class="pc-ftr-logo"><img src="${lg}" alt="RWO" style="height:18px;width:auto;opacity:.5;" onerror="this.outerHTML='RWO'"></div></div>`;
@@ -923,7 +939,7 @@ async function downloadAllPDFs(){
     try{
       await html2pdf().set({
         margin:[5,3,5,3],filename:fname,image:{type:'jpeg',quality:0.98},
-        html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',width:720},
+        html2canvas:{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',width:720},
         jsPDF:{unit:'mm',format:'letter',orientation:'portrait'}
       }).from(el).save();
     }catch(e){console.error('PDF error for '+t.teamname,e);}
