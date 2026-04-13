@@ -3,27 +3,27 @@
     {
       "teamname": "Dirty Money Racing",
       "boatnum": "3",
-      "boat_color": "#111111",
+      "boat_color": "#f08000",
       "class": "Super Cat",
       "notes": "",
       "driver_name": "Brit Lilly",
-      "driver_apba": "",
-      "driver_rwo": true,
-      "driver_apbamem": false,
+      "driver_apba": "12345",
+      "driver_rwo": false,
+      "driver_apbamem": true,
       "driver_medical": true,
       "driver_dunker": true,
-      "driver_medical_date": "",
-      "driver_dunker_date": "",
+      "driver_medical_date": "2026-12-13",
+      "driver_dunker_date": "2026-11-24",
       "driver_rwo_pay": "unpaid",
-      "driver_apba_pay": "unpaid",
+      "driver_apba_pay": "paid",
       "throttle_name": "Bill Pyburn",
-      "throttle_apba": "",
+      "throttle_apba": "67890",
       "throttle_rwo": true,
-      "throttle_apbamem": false,
+      "throttle_apbamem": true,
       "throttle_medical": false,
       "throttle_dunker": false,
-      "throttle_medical_date": "",
-      "throttle_dunker_date": "",
+      "throttle_medical_date": "2026-03-31",
+      "throttle_dunker_date": "2025-08-12",
       "throttle_rwo_pay": "unpaid",
       "throttle_apba_pay": "unpaid",
       "alt_name": "",
@@ -32,7 +32,24 @@
       "alt_apbamem": false,
       "alt_medical": false,
       "alt_dunker": false,
-      "crew": [],
+      "crew": [
+        {
+          "name": "Bobby Adams",
+          "paid": "unpaid"
+        },
+        {
+          "name": "Michelle Andre",
+          "paid": "paid"
+        },
+        {
+          "name": "Crew member #3",
+          "paid": "paid"
+        },
+        {
+          "name": "Crew member #4",
+          "paid": "unpaid"
+        }
+      ],
       "races": {
         "atlanticcity": {
           "registered": true,
@@ -40,18 +57,18 @@
         },
         "michigancity": {
           "registered": true,
-          "payment": "paid"
+          "payment": "unpaid"
         },
         "clearwater": {
           "registered": true,
-          "payment": "paid"
+          "payment": "unpaid"
         },
         "keywest": {
           "registered": false,
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T17:23:01.283Z",
+      "updated": "2026-04-13T17:23:42.912Z",
       "id": "team_1776092503277"
     }
   ],
