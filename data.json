@@ -66,6 +66,65 @@
       },
       "updated": "2026-04-13T18:03:30.960Z",
       "id": "team_1776092503277"
+    },
+    {
+      "teamname": "MCON Racing",
+      "boatnum": "06",
+      "boat_color": "#111111",
+      "class": "Class 1",
+      "notes": "",
+      "driver_name": "",
+      "driver_apba": "",
+      "driver_rwo": false,
+      "driver_apbamem": false,
+      "driver_medical": false,
+      "driver_dunker": false,
+      "driver_medical_date": "",
+      "driver_dunker_date": "",
+      "driver_rwo_pay": "unpaid",
+      "driver_apba_pay": "unpaid",
+      "throttle_name": "Tyler Miller",
+      "throttle_apba": "",
+      "throttle_rwo": true,
+      "throttle_apbamem": true,
+      "throttle_medical": true,
+      "throttle_dunker": true,
+      "throttle_medical_date": "2026-10-06",
+      "throttle_dunker_date": "2026-10-20",
+      "throttle_rwo_pay": "paid",
+      "throttle_apba_pay": "paid",
+      "alt_name": "",
+      "alt_apba": "",
+      "alt_rwo": false,
+      "alt_apbamem": false,
+      "alt_medical": false,
+      "alt_dunker": false,
+      "crew": [
+        {
+          "name": "Lindsey Miller",
+          "paid": "unpaid"
+        }
+      ],
+      "races": {
+        "atlanticcity": {
+          "registered": true,
+          "payment": "paid"
+        },
+        "michigancity": {
+          "registered": true,
+          "payment": "unpaid"
+        },
+        "clearwater": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "keywest": {
+          "registered": false,
+          "payment": "unpaid"
+        }
+      },
+      "updated": "2026-04-13T18:41:11.548Z",
+      "id": "team_1776105671548"
     }
   ],
   "races": [
@@ -90,5 +149,5 @@
       "date": "Nov 1-8, 2026"
     }
   ],
-  "season": "2025"
+  "season": "2026"
 }
