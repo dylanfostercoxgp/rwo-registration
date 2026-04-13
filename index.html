@@ -323,17 +323,6 @@ button,input,select{font-family:inherit;}
     <div class="stats-row" id="stats-row"></div>
     <div class="toolbar">
       <input class="search-box" type="text" placeholder="Search team, boat #, driver, throttleman..." id="search-in" oninput="renderAll()">
-      <select class="fsel" id="fpay" onchange="renderAll()">
-        <option value="">All payment statuses</option>
-        <option value="paid">Fully paid</option>
-        <option value="unpaid">Unpaid</option>
-        <option value="partial">Partial</option>
-      </select>
-      <select class="fsel" id="fdocs" onchange="renderAll()">
-        <option value="">All doc statuses</option>
-        <option value="missing">Missing docs</option>
-        <option value="complete">Docs complete</option>
-      </select>
       <button class="btn btn-ol" onclick="expandAll()" title="Expand all classes">&#9660; Expand All</button>
       <button class="btn btn-ol" onclick="collapseAll()" title="Collapse all classes">&#9650; Collapse All</button>
       <button class="btn btn-ol" onclick="downloadAllPDFs()" title="Download all visible teams as individual PDFs">&#128196; Download All PDFs</button>
@@ -697,21 +686,18 @@ function renderStats(){
   });
   document.getElementById('stats-row').innerHTML=`<div class="stat"><div class="stat-lbl">Teams</div><div class="stat-num">${teams.length}</div></div><div class="stat"><div class="stat-lbl">Fully Paid</div><div class="stat-num g">${paid}</div></div><div class="stat"><div class="stat-lbl">Unpaid / Partial</div><div class="stat-num r">${unpaid}</div></div><div class="stat"><div class="stat-lbl">Missing Docs</div><div class="stat-num a">${docs}</div></div>`;
 }
+function teamSearchStr(t){
+  // Build a searchable string from all team fields
+  return[t.teamname,t.boatnum,t.class,t.notes,
+    t.driver_name,t.driver_apba,t.throttle_name,t.throttle_apba,
+    t.alt_name,t.alt_apba,
+    ...(t.crew||[]).map(c=>c.name)
+  ].filter(Boolean).join(' ').toLowerCase();
+}
 function getFilteredTeams(){
-  const q=document.getElementById('search-in').value.toLowerCase();
-  const fp=document.getElementById('fpay').value;
-  const fd=document.getElementById('fdocs').value;
+  const q=document.getElementById('search-in').value.toLowerCase().trim();
   let teams=getByRace();
-  if(q)teams=teams.filter(t=>(t.teamname||'').toLowerCase().includes(q)||(t.boatnum||'').toLowerCase().includes(q)||(t.driver_name||'').toLowerCase().includes(q)||(t.throttle_name||'').toLowerCase().includes(q));
-  if(fp)teams=teams.filter(t=>{
-    const races=curRace==='all'?(DB.races||[]).map(r=>r.id):[curRace];
-    const reg=races.filter(rid=>t.races&&t.races[rid]&&t.races[rid].registered);if(!reg.length)return false;
-    if(fp==='paid')return reg.every(rid=>t.races[rid].payment==='paid');
-    if(fp==='unpaid')return reg.some(rid=>!t.races[rid].payment||t.races[rid].payment==='unpaid');
-    if(fp==='partial')return reg.some(rid=>t.races[rid].payment==='partial');
-  });
-  if(fd==='missing')teams=teams.filter(t=>missingDocs(t));
-  if(fd==='complete')teams=teams.filter(t=>!missingDocs(t));
+  if(q)teams=teams.filter(t=>teamSearchStr(t).includes(q));
   return teams;
 }
 function renderTeams(){
