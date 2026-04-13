@@ -36,16 +36,7 @@
       "alt_dunker_date": "",
       "alt_rwo_pay": "paid",
       "alt_apba_pay": "unpaid",
-      "crew": [
-        {
-          "name": "Crew 1",
-          "paid": "unpaid"
-        },
-        {
-          "name": "Crew 2",
-          "paid": "paid"
-        }
-      ],
+      "crew": [],
       "races": {
         "atlanticcity": {
           "registered": false,
@@ -64,7 +55,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T19:10:13.342Z",
+      "updated": "2026-04-13T19:10:53.878Z",
       "id": "team_1776106726461"
     }
   ],
