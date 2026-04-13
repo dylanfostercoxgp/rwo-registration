@@ -57,10 +57,10 @@
         },
         "keywest": {
           "registered": false,
-          "payment": "unpaid"
+          "payment": "paid"
         }
       },
-      "updated": "2026-04-13T17:37:36.285Z",
+      "updated": "2026-04-13T17:43:02.701Z",
       "id": "team_1776092503277"
     }
   ],
