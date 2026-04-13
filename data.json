@@ -40,6 +40,10 @@
         {
           "name": "Michelle",
           "paid": "unpaid"
+        },
+        {
+          "name": "Crew Member #3",
+          "paid": "unpaid"
         }
       ],
       "races": {
@@ -60,7 +64,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T17:53:44.398Z",
+      "updated": "2026-04-13T18:03:30.960Z",
       "id": "team_1776092503277"
     }
   ],
