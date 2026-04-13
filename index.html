@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RWO Registration Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a1628;
+  --navy-mid: #112240;
+  --navy-light: #1a3356;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dim: #8a6e2f;
+  --white: #f4f1eb;
+  --white-dim: #c8c4bb;
+  --white-dimmer: #7a7670;
+  --red: #e05252;
+  --green: #4caf7d;
+  --amber: #e09a3a;
+  --blue-tag: #4a8fd4;
+  --border: rgba(201,168,76,0.18);
+  --border-hover: rgba(201,168,76,0.4);
+  --card-bg: #0e1e35;
+  --input-bg: #091525;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; font-size: 14px; }
+
+/* SETUP */
+#setup-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background: radial-gradient(ellipse at 50% 0%, #1a3356 0%, var(--navy) 70%); }
+.setup-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 500px; }
+.setup-logo { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 4px; color: var(--gold); margin-bottom: 2px; }
+.setup-sub { font-size: 12px; color: var(--white-dimmer); margin-bottom: 2rem; letter-spacing: .5px; }
+.setup-card h2 { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
+.setup-card p { font-size: 13px; color: var(--white-dimmer); line-height: 1.65; margin-bottom: 1.25rem; }
+.setup-card a { color: var(--gold); }
+.setup-steps { background: var(--input-bg); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 12px; color: var(--white-dimmer); line-height: 2.1; counter-reset: s; }
+.setup-steps li { counter-increment: s; list-style: none; padding-left: 1.5rem; position: relative; }
+.setup-steps li::before { content: counter(s); position: absolute; left: 0; color: var(--gold); font-weight: 700; font-family: 'DM Mono', monospace; font-size: 11px; }
+.lbl { font-size: 10px; font-weight: 700; color: var(--white-dimmer); text-transform: uppercase; letter-spacing: .9px; margin-bottom: 5px; display: block; }
+.sinput { width: 100%; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-family: 'DM Mono', monospace; font-size: 13px; color: var(--white); outline: none; margin-bottom: 1rem; transition: border-color .2s; }
+.sinput:focus { border-color: var(--gold); }
+.sinput::placeholder { color: var(--white-dimmer); opacity: .5; }
+.setup-btn { width: 100%; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: .5px; transition: background .2s; }
+.setup-btn:hover { background: var(--gold-light); }
+.setup-err { font-size: 12px; color: var(--red); margin-top: 8px; display: none; }
+
+/* APP */
+#app { display: none; }
+.topbar { background: var(--navy-mid); border-bottom: 1px solid var(--border); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 54px; position: sticky; top: 0; z-index: 100; gap: 10px; }
+.topbar-l { display: flex; align-items: center; gap: 14px; }
+.logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2.5px; color: var(--gold); line-height: 1; white-space: nowrap; }
+.season-tag { font-size: 11px; color: var(--white-dimmer); background: var(--navy-light); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-family: 'DM Mono', monospace; white-space: nowrap; }
+.topbar-r { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.save-status { font-size: 11px; color: var(--white-dimmer); font-family: 'DM Mono', monospace; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.save-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.save-dot.saving { background: var(--amber); animation: pulse 1s infinite; }
+.save-dot.error { background: var(--red); }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.25} }
+.btn-outline { background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; color: var(--white-dim); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+.btn-gold { background: var(--gold); border: none; border-radius: 6px; padding: 7px 14px; color: var(--navy); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s; white-space: nowrap; }
+.btn-gold:hover { background: var(--gold-light); }
+
+.race-nav { background: var(--navy-mid); border-bottom: 1px solid var(--border); padding: 0 1.5rem; display: flex; align-items: center; gap: 2px; overflow-x: auto; }
+.race-tab { padding: 11px 16px; font-size: 11px; font-weight: 700; color: var(--white-dimmer); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; letter-spacing: .6px; text-transform: uppercase; transition: all .15s; background: none; border-left: none; border-right: none; border-top: none; }
+.race-tab:hover { color: var(--white-dim); }
+.race-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+.main { max-width: 1100px; margin: 0 auto; padding: 1.25rem 1.5rem; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.25rem; }
+.stat { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+.stat-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--white-dimmer); margin-bottom: 6px; }
+.stat-num { font-size: 28px; font-weight: 300; color: var(--white); font-family: 'DM Mono', monospace; }
+.stat-num.g { color: var(--green); }
+.stat-num.r { color: var(--red); }
+.stat-num.a { color: var(--amber); }
+
+.toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+.search-box { flex: 1; min-width: 180px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 13px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--white); outline: none; transition: border-color .2s; }
+.search-box:focus { border-color: var(--gold); }
+.search-box::placeholder { color: var(--white-dimmer); opacity: .5; }
+.fsel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 11px; font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--white-dim); outline: none; cursor: pointer; }
+.fsel option { background: var(--navy-mid); }
+
+.team-grid { display: grid; gap: 10px; }
+.team-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: border-color .2s; }
+.team-card:hover { border-color: var(--border-hover); }
+
+.card-head { display: flex; align-items: center; justify-content: space-between; padding: 11px 15px; border-bottom: 1px solid var(--border); gap: 10px; flex-wrap: wrap; }
+.card-head-l { display: flex; align-items: center; gap: 11px; }
+.boat-badge { width: 38px; height: 38px; border-radius: 50%; background: var(--navy-light); border: 1px solid var(--gold-dim); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 1px; color: var(--gold); flex-shrink: 0; }
+.team-name-t { font-size: 14px; font-weight: 600; color: var(--white); }
+.team-meta { font-size: 11px; color: var(--white-dimmer); margin-top: 2px; }
+.card-head-r { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+
+.pill { font-size: 10px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; padding: 3px 9px; border-radius: 20px; }
+.p-green { background: rgba(76,175,125,0.14); color: var(--green); border: 1px solid rgba(76,175,125,0.28); }
+.p-red { background: rgba(224,82,82,0.14); color: var(--red); border: 1px solid rgba(224,82,82,0.28); }
+.p-amber { background: rgba(224,154,58,0.14); color: var(--amber); border: 1px solid rgba(224,154,58,0.28); }
+.p-gray { background: rgba(255,255,255,0.05); color: var(--white-dimmer); border: 1px solid rgba(255,255,255,0.1); }
+.p-blue { background: rgba(74,143,212,0.14); color: var(--blue-tag); border: 1px solid rgba(74,143,212,0.28); }
+
+.card-body-inner { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); }
+.role-col { padding: 11px 15px; border-right: 1px solid var(--border); }
+.role-col:last-child { border-right: none; }
+.role-heading { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold-dim); margin-bottom: 5px; }
+.person-name-t { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 1px; }
+.wpra-num { font-size: 11px; color: var(--white-dimmer); font-family: 'DM Mono', monospace; margin-bottom: 7px; }
+.checklist { display: flex; flex-direction: column; gap: 3px; }
+.check-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--white-dimmer); }
+.check-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.check-dot.ok { background: var(--green); }
+.check-dot.no { background: var(--red); }
+.check-dot.na { background: #444; }
+
+.card-foot { display: flex; align-items: center; justify-content: space-between; padding: 7px 15px; border-top: 1px solid var(--border); gap: 8px; flex-wrap: wrap; }
+.card-foot-note { font-size: 11px; color: var(--white-dimmer); font-family: 'DM Mono', monospace; }
+.card-actions { display: flex; gap: 6px; }
+.btn-sm { padding: 5px 11px; font-size: 11px; font-weight: 700; border-radius: 5px; cursor: pointer; letter-spacing: .2px; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+.btn-sm-ol { background: transparent; border: 1px solid var(--border-hover); color: var(--white-dim); }
+.btn-sm-ol:hover { border-color: var(--gold); color: var(--gold); }
+.btn-sm-g { background: var(--gold); border: none; color: var(--navy); }
+.btn-sm-g:hover { background: var(--gold-light); }
+.btn-sm-r { background: rgba(224,82,82,0.12); border: 1px solid rgba(224,82,82,0.28); color: var(--red); }
+.btn-sm-r:hover { background: rgba(224,82,82,0.22); }
+
+.empty-state { text-align: center; padding: 4rem 2rem; color: var(--white-dimmer); }
+.empty-state h3 { font-size: 16px; font-weight: 500; color: var(--white-dim); margin-bottom: 6px; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.72); z-index: 200; align-items: flex-start; justify-content: center; padding: 2rem 1rem; overflow-y: auto; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: var(--navy-mid); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 640px; margin: auto; }
+.modal-hdr { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.modal-title { font-size: 16px; font-weight: 600; color: var(--white); }
+.modal-close { background: none; border: none; color: var(--white-dimmer); font-size: 22px; cursor: pointer; line-height: 1; transition: color .15s; }
+.modal-close:hover { color: var(--white); }
+.modal-body { padding: 20px; }
+.msec { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--gold-dim); margin-bottom: 10px; margin-top: 18px; }
+.msec:first-child { margin-top: 0; }
+.fg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fg3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--white-dimmer); }
+.field input, .field select { background: var(--input-bg); border: 1px solid var(--border); border-radius: 7px; padding: 8px 11px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--white); outline: none; transition: border-color .2s; }
+.field input:focus, .field select:focus { border-color: var(--gold); }
+.field input::placeholder { color: var(--white-dimmer); opacity: .45; }
+.field select option { background: var(--navy-mid); }
+.doc-checks { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 8px; }
+.dchk { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--white-dimmer); cursor: pointer; }
+.dchk input { accent-color: var(--gold); cursor: pointer; width: 13px; height: 13px; }
+
+.race-reg-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.rri { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.rri-head { padding: 7px 10px; background: var(--input-bg); border-bottom: 1px solid var(--border); }
+.rri-name { font-size: 11px; font-weight: 700; color: var(--white-dim); text-transform: uppercase; letter-spacing: .5px; }
+.rri-date { font-size: 10px; color: var(--white-dimmer); margin-top: 1px; }
+.rri-body { padding: 8px 10px; }
+.rri-check { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--white-dimmer); margin-bottom: 6px; cursor: pointer; }
+.rri-check input { accent-color: var(--gold); cursor: pointer; }
+.pay-sel { width: 100%; background: var(--input-bg); border: 1px solid var(--border); border-radius: 5px; padding: 5px 7px; font-size: 11px; color: var(--white-dim); outline: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.pay-sel option { background: var(--navy-mid); }
+.pay-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--white-dimmer); margin-bottom: 3px; }
+
+.modal-ftr { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); gap: 10px; flex-wrap: wrap; }
+.modal-ftr-l { font-size: 11px; color: var(--white-dimmer); font-family: 'DM Mono', monospace; }
+.modal-ftr-r { display: flex; gap: 8px; }
+.btn-cancel { background: transparent; border: 1px solid var(--border-hover); border-radius: 7px; padding: 8px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--white-dim); cursor: pointer; transition: all .15s; }
+.btn-cancel:hover { border-color: var(--white-dim); }
+.btn-save { background: var(--gold); border: none; border-radius: 7px; padding: 8px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--navy); cursor: pointer; transition: background .15s; }
+.btn-save:hover { background: var(--gold-light); }
+
+/* PRINT MODAL */
+.print-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.82); z-index: 300; align-items: center; justify-content: center; padding: 1.5rem; }
+.print-overlay.open { display: flex; }
+.print-box { background: #fff; border-radius: 12px; width: 100%; max-width: 560px; font-family: 'DM Sans', sans-serif; color: #111; overflow: hidden; max-height: 90vh; overflow-y: auto; }
+.print-actions-bar { display: flex; gap: 8px; padding: 10px 14px; background: #f2f2f2; border-bottom: 1px solid #ddd; justify-content: flex-end; position: sticky; top: 0; }
+.btn-pclose { background: #444; color: #fff; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-pprint { background: #0a1628; color: #c9a84c; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.pc { padding: 22px 26px; }
+.pc-hdr { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px solid #0a1628; }
+.pc-org { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: #0a1628; line-height: 1; }
+.pc-event-lbl { font-size: 10px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: .8px; margin-top: 3px; }
+.pc-boat { width: 52px; height: 52px; border-radius: 50%; background: #0a1628; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1px; color: #c9a84c; flex-shrink: 0; }
+.pc-team-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
+.pc-tname { font-size: 18px; font-weight: 700; color: #0a1628; }
+.pc-cls { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; background: #0a1628; color: #c9a84c; padding: 3px 9px; border-radius: 4px; }
+.pc-crew { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.pc-role { background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 7px; padding: 9px 11px; }
+.pc-rlbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 3px; }
+.pc-rname { font-size: 13px; font-weight: 700; color: #0a1628; margin-bottom: 1px; }
+.pc-rwpra { font-size: 10px; color: #888; font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+.pc-checks { display: flex; flex-direction: column; gap: 3px; }
+.pc-chk { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #555; }
+.pc-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.pc-dot.ok { background: #4caf7d; }
+.pc-dot.no { background: #e05252; }
+.pc-dot.na { background: #ccc; }
+.pc-pay { border: 1px solid #e0e0e0; border-radius: 7px; overflow: hidden; }
+.pc-pay-hdr { background: #0a1628; color: #c9a84c; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 5px 11px; }
+.pc-pay-grid { display: grid; grid-template-columns: repeat(4,1fr); }
+.pc-pay-cell { padding: 7px 8px; border-right: 1px solid #e0e0e0; text-align: center; }
+.pc-pay-cell:last-child { border-right: none; }
+.pc-pay-race { font-size: 9px; font-weight: 700; color: #0a1628; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
+.pc-pay-status { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px; display: inline-block; }
+.pc-pay-status.paid { background: #e8f5ef; color: #2d8c5e; }
+.pc-pay-status.unpaid { background: #fdeaea; color: #c0392b; }
+.pc-pay-status.partial { background: #fef5e7; color: #b7770d; }
+.pc-pay-status.na { background: #f0f0f0; color: #999; }
+.pc-ftr { margin-top: 12px; padding-top: 8px; border-top: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
+.pc-ftr-note { font-size: 10px; color: #aaa; }
+.pc-ftr-logo { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; color: #ccc; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 1.25rem; right: 1.25rem; background: var(--navy-mid); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; font-size: 13px; color: var(--white); z-index: 400; display: flex; align-items: center; gap: 8px; opacity: 0; transform: translateY(6px); transition: all .22s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .card-body-inner { grid-template-columns: 1fr; }
+  .role-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .role-col:last-child { border-bottom: none; }
+  .race-reg-grid { grid-template-columns: repeat(2,1fr); }
+  .fg2 { grid-template-columns: 1fr; }
+  .doc-checks { grid-template-columns: repeat(2,1fr); }
+  .pc-crew { grid-template-columns: 1fr; }
+}
+@media print {
+  body * { visibility: hidden; }
+  .pc, .pc * { visibility: visible; }
+  .pc { position: fixed; inset: 0; }
+  .print-actions-bar { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <div class="setup-logo">RWO</div>
+    <div class="setup-sub">Registration Manager &mdash; First Time Setup</div>
+    <h2>Connect to GitHub</h2>
+    <p>All registration data saves as a JSON file directly in your GitHub repo. Works on any device, any browser. Anyone you share the token with can edit.</p>
+    <ol class="setup-steps">
+      <li>Go to <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a></li>
+      <li>Name it "RWO Registration" &mdash; set expiration to No expiration</li>
+      <li>Check the top-level <strong>repo</strong> checkbox</li>
+      <li>Click Generate token and paste it below</li>
+    </ol>
+    <label class="lbl">GitHub Username</label>
+    <input class="sinput" id="s-owner" placeholder="dylanfostercoxgp">
+    <label class="lbl">Repository Name</label>
+    <input class="sinput" id="s-repo" placeholder="rwo-registration">
+    <label class="lbl">Personal Access Token</label>
+    <input class="sinput" id="s-token" type="password" placeholder="ghp_xxxxxxxxxxxx">
+    <button class="setup-btn" onclick="doSetup()">Connect &amp; Launch</button>
+    <div class="setup-err" id="s-err"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-l">
+      <div class="logo-text">RWO</div>
+      <div class="season-tag" id="season-tag">2025 Season</div>
+    </div>
+    <div class="topbar-r">
+      <div class="save-status"><div class="save-dot" id="save-dot"></div><span id="save-lbl">Saved</span></div>
+      <button class="btn-outline" onclick="resetConfig()">&#9881; Settings</button>
+      <button class="btn-gold" onclick="openAdd()">+ Add Team</button>
+    </div>
+  </div>
+
+  <div class="race-nav" id="race-nav">
+    <button class="race-tab active" data-race="all" onclick="switchRace(this)">All Races</button>
+  </div>
+
+  <div class="main">
+    <div class="stats-row" id="stats-row"></div>
+    <div class="toolbar">
+      <input class="search-box" type="text" placeholder="Search team, boat #, driver..." id="search-in" oninput="renderTeams()">
+      <select class="fsel" id="fpay" onchange="renderTeams()">
+        <option value="">All payment statuses</option>
+        <option value="paid">Fully paid</option>
+        <option value="unpaid">Unpaid</option>
+        <option value="partial">Partial</option>
+      </select>
+      <select class="fsel" id="fdocs" onchange="renderTeams()">
+        <option value="">All doc statuses</option>
+        <option value="missing">Missing docs</option>
+        <option value="complete">Docs complete</option>
+      </select>
+    </div>
+    <div class="team-grid" id="team-grid"></div>
+  </div>
+</div>
+
+<!-- TEAM MODAL -->
+<div class="modal-overlay" id="team-modal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title" id="mtitle">Add Team</div>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="msec">Team Info</div>
+      <div class="fg2">
+        <div class="field"><label>Team Name</label><input type="text" id="f-tn" placeholder="Thunder Marine Racing"></div>
+        <div class="field"><label>Boat #</label><input type="text" id="f-bn" placeholder="47"></div>
+        <div class="field"><label>Class</label>
+          <select id="f-cl">
+            <option value="">Select...</option>
+            <option>Super Cat</option><option>Offshore</option><option>Stock</option>
+            <option>Unlimited</option><option>Turbine</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field"><label>Notes</label><input type="text" id="f-nt" placeholder="Optional"></div>
+      </div>
+
+      <div class="msec">Driver</div>
+      <div class="fg2">
+        <div class="field"><label>Name</label><input type="text" id="f-dn" placeholder="Jake Harmon"></div>
+        <div class="field"><label>WPRA #</label><input type="text" id="f-dw" placeholder="10482"></div>
+      </div>
+      <div class="doc-checks">
+        <label class="dchk"><input type="checkbox" id="f-dr"> RWO Member</label>
+        <label class="dchk"><input type="checkbox" id="f-dw2"> WPRA Member</label>
+        <label class="dchk"><input type="checkbox" id="f-dm"> Medical Cert</label>
+        <label class="dchk"><input type="checkbox" id="f-dd"> Dunker Test</label>
+      </div>
+
+      <div class="msec">Throttleman</div>
+      <div class="fg2">
+        <div class="field"><label>Name</label><input type="text" id="f-tn2" placeholder="Marcus Webb"></div>
+        <div class="field"><label>WPRA #</label><input type="text" id="f-tw" placeholder="10841"></div>
+      </div>
+      <div class="doc-checks">
+        <label class="dchk"><input type="checkbox" id="f-tr"> RWO Member</label>
+        <label class="dchk"><input type="checkbox" id="f-tw2"> WPRA Member</label>
+        <label class="dchk"><input type="checkbox" id="f-tm"> Medical Cert</label>
+        <label class="dchk"><input type="checkbox" id="f-td"> Dunker Test</label>
+      </div>
+
+      <div class="msec">Alternate Driver / Throttleman</div>
+      <div class="fg2">
+        <div class="field"><label>Name</label><input type="text" id="f-an" placeholder="Optional"></div>
+        <div class="field"><label>WPRA #</label><input type="text" id="f-aw" placeholder="Optional"></div>
+      </div>
+      <div class="doc-checks">
+        <label class="dchk"><input type="checkbox" id="f-ar"> RWO Member</label>
+        <label class="dchk"><input type="checkbox" id="f-aw2"> WPRA Member</label>
+        <label class="dchk"><input type="checkbox" id="f-am"> Medical Cert</label>
+        <label class="dchk"><input type="checkbox" id="f-ad"> Dunker Test</label>
+      </div>
+
+      <div class="msec">Race Registration &amp; Payment</div>
+      <div class="race-reg-grid" id="rrg"></div>
+    </div>
+    <div class="modal-ftr">
+      <div class="modal-ftr-l" id="meid"></div>
+      <div class="modal-ftr-r">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-save" onclick="saveTeam()">Save Team</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRINT MODAL -->
+<div class="print-overlay" id="print-overlay">
+  <div class="print-box">
+    <div class="print-actions-bar">
+      <button class="btn-pclose" onclick="closePrint()">Close</button>
+      <button class="btn-pprint" onclick="window.print()">&#128438; Print</button>
+    </div>
+    <div class="pc" id="print-content"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><div class="toast-dot" id="tdot"></div><span id="tmsg"></span></div>
+
+<script>
+const DB_FILE = 'data.json';
+let CFG = {};
+let DB = { teams: [], races: [], season: '2025' };
+let editId = null;
+let curRace = 'all';
+let saveTimer = null;
+
+const DEFAULT_RACES = [
+  { id: 'clearwater', name: 'Clearwater', date: 'Sep 26-28, 2025' },
+  { id: 'miami',      name: 'Miami',      date: 'Nov 7-9, 2025'   },
+  { id: 'bimini',     name: 'Bimini',     date: 'Jan 15-17, 2026' },
+  { id: 'nassau',     name: 'Nassau',     date: 'Mar 4-6, 2026'   }
+];
+
+// SETUP
+function doSetup() {
+  const owner = document.getElementById('s-owner').value.trim();
+  const repo  = document.getElementById('s-repo').value.trim();
+  const token = document.getElementById('s-token').value.trim();
+  const err   = document.getElementById('s-err');
+  if (!owner || !repo || !token) { err.style.display='block'; err.textContent='All three fields are required.'; return; }
+  CFG = { owner, repo, token };
+  localStorage.setItem('rwo_cfg', JSON.stringify(CFG));
+  err.style.display = 'none';
+  initApp();
+}
+
+function resetConfig() {
+  if (!confirm('This will clear your saved token and reload the setup screen. Continue?')) return;
+  localStorage.removeItem('rwo_cfg');
+  location.reload();
+}
+
+// GITHUB
+async function ghGet(path) {
+  const r = await fetch(`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {
+    headers: { Authorization: `token ${CFG.token}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('GitHub GET ' + r.status);
+  return r.json();
+}
+
+async function ghPut(path, content, sha) {
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
+  const body = { message: 'RWO update', content: encoded, ...(sha && { sha }) };
+  const r = await fetch(`https://api.github.com/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {
+    method: 'PUT',
+    headers: { Authorization: `token ${CFG.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error('GitHub PUT ' + r.status);
+  return r.json();
+}
+
+async function loadData() {
+  setSave('saving');
+  try {
+    const file = await ghGet(DB_FILE);
+    if (file) {
+      DB = JSON.parse(decodeURIComponent(escape(atob(file.content.replace(/\n/g,'')))));
+      DB._sha = file.sha;
+    } else {
+      DB = { teams: [], races: DEFAULT_RACES, season: '2025' };
+      await saveData();
+    }
+    if (!DB.races || !DB.races.length) DB.races = DEFAULT_RACES;
+    setSave('saved');
+  } catch(e) {
+    setSave('error');
+    toast('Could not load from GitHub: ' + e.message, 'r');
+  }
+}
+
+async function saveData() {
+  setSave('saving');
+  try {
+    const sha = DB._sha;
+    const copy = JSON.parse(JSON.stringify(DB));
+    delete copy._sha;
+    const res = await ghPut(DB_FILE, copy, sha);
+    DB._sha = res.content.sha;
+    setSave('saved');
+  } catch(e) {
+    setSave('error');
+    toast('Save failed: ' + e.message, 'r');
+  }
+}
+
+function queueSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveData, 1500); }
+
+function setSave(s) {
+  const dot = document.getElementById('save-dot');
+  const lbl = document.getElementById('save-lbl');
+  dot.className = 'save-dot' + (s==='saving'?' saving':s==='error'?' error':'');
+  lbl.textContent = s==='saving'?'Saving...':s==='error'?'Error':'Saved';
+}
+
+// INIT
+async function initApp() {
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  await loadData();
+  buildNav();
+  renderStats();
+  renderTeams();
+}
+
+function buildNav() {
+  const nav = document.getElementById('race-nav');
+  nav.innerHTML = '<button class="race-tab active" data-race="all" onclick="switchRace(this)">All Races</button>';
+  (DB.races||[]).forEach(r => {
+    const b = document.createElement('button');
+    b.className = 'race-tab'; b.dataset.race = r.id;
+    b.onclick = function(){ switchRace(this); };
+    b.textContent = r.name;
+    nav.appendChild(b);
+  });
+  document.getElementById('season-tag').textContent = (DB.season||'2025') + ' Season';
+}
+
+function switchRace(el) {
+  document.querySelectorAll('.race-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  curRace = el.dataset.race;
+  renderStats();
+  renderTeams();
+}
+
+// STATS
+function getByRace() {
+  if (!DB.teams) return [];
+  if (curRace === 'all') return DB.teams;
+  return DB.teams.filter(t => t.races && t.races[curRace] && t.races[curRace].registered);
+}
+
+function missingDocs(t) {
+  return ['driver','throttle'].some(r => !t[r+'_rwo']||!t[r+'_wpramem']||!t[r+'_medical']||!t[r+'_dunker']);
+}
+
+function renderStats() {
+  const teams = getByRace();
+  let paid=0, unpaid=0, docs=0;
+  teams.forEach(t => {
+    const races = curRace==='all' ? (DB.races||[]).map(r=>r.id) : [curRace];
+    const reg = races.filter(rid => t.races && t.races[rid] && t.races[rid].registered);
+    if (!reg.length) return;
+    if (reg.every(rid => t.races[rid].payment==='paid')) paid++;
+    else if (reg.some(rid => !t.races[rid].payment || t.races[rid].payment==='unpaid')) unpaid++;
+    if (missingDocs(t)) docs++;
+  });
+  document.getElementById('stats-row').innerHTML =
+    `<div class="stat"><div class="stat-lbl">Teams</div><div class="stat-num">${teams.length}</div></div>
+     <div class="stat"><div class="stat-lbl">Fully Paid</div><div class="stat-num g">${paid}</div></div>
+     <div class="stat"><div class="stat-lbl">Unpaid / Partial</div><div class="stat-num r">${unpaid}</div></div>
+     <div class="stat"><div class="stat-lbl">Missing Docs</div><div class="stat-num a">${docs}</div></div>`;
+}
+
+// RENDER
+function renderTeams() {
+  const c = document.getElementById('team-grid');
+  const q = document.getElementById('search-in').value.toLowerCase();
+  const fp = document.getElementById('fpay').value;
+  const fd = document.getElementById('fdocs').value;
+  let teams = getByRace();
+  if (q) teams = teams.filter(t =>
+    (t.teamname||'').toLowerCase().includes(q) ||
+    (t.boatnum||'').toLowerCase().includes(q) ||
+    (t.driver_name||'').toLowerCase().includes(q) ||
+    (t.throttle_name||'').toLowerCase().includes(q)
+  );
+  if (fp) teams = teams.filter(t => {
+    const races = curRace==='all'?(DB.races||[]).map(r=>r.id):[curRace];
+    const reg = races.filter(rid=>t.races&&t.races[rid]&&t.races[rid].registered);
+    if (!reg.length) return false;
+    if (fp==='paid') return reg.every(rid=>t.races[rid].payment==='paid');
+    if (fp==='unpaid') return reg.some(rid=>!t.races[rid].payment||t.races[rid].payment==='unpaid');
+    if (fp==='partial') return reg.some(rid=>t.races[rid].payment==='partial');
+  });
+  if (fd==='missing') teams=teams.filter(t=>missingDocs(t));
+  if (fd==='complete') teams=teams.filter(t=>!missingDocs(t));
+
+  if (!teams.length) {
+    c.innerHTML = `<div class="empty-state"><div style="font-size:42px;opacity:.3;margin-bottom:1rem">&#9875;</div><h3>No teams found</h3><p style="margin-top:4px;font-size:13px">Add your first team using the button above.</p></div>`;
+    return;
+  }
+  c.innerHTML = teams.map(cardHTML).join('');
+}
+
+function payBadge(t) {
+  const races = curRace==='all'?(DB.races||[]).map(r=>r.id):[curRace];
+  const reg = races.filter(rid=>t.races&&t.races[rid]&&t.races[rid].registered);
+  if (!reg.length) return '<span class="pill p-gray">Not registered</span>';
+  const ss = reg.map(rid=>t.races[rid].payment||'unpaid');
+  if (ss.every(s=>s==='paid')) return '<span class="pill p-green">&#10003; Paid</span>';
+  if (ss.every(s=>s==='unpaid')) return '<span class="pill p-red">Unpaid</span>';
+  return '<span class="pill p-amber">Partial</span>';
+}
+
+function racesBadge(t) {
+  const reg = (DB.races||[]).filter(r=>t.races&&t.races[r.id]&&t.races[r.id].registered);
+  if (!reg.length) return '<span class="pill p-gray">No races</span>';
+  if (reg.length===(DB.races||[]).length) return `<span class="pill p-blue">All ${reg.length} races</span>`;
+  return `<span class="pill p-blue">${reg.map(r=>r.name).join(', ')}</span>`;
+}
+
+function roleHTML(t, role, lbl) {
+  const nm = t[role+'_name'];
+  if (!nm) return '';
+  const keys = [['rwo','RWO Member'],['wpramem','WPRA Member'],['medical','Medical Cert'],['dunker','Dunker Test']];
+  return `<div class="role-col">
+    <div class="role-heading">${lbl}</div>
+    <div class="person-name-t">${nm}</div>
+    <div class="wpra-num">${t[role+'_wpra']?'WPRA #'+t[role+'_wpra']:'&mdash;'}</div>
+    <div class="checklist">${keys.map(([k,l])=>`<div class="check-item"><div class="check-dot ${t[role+'_'+k]?'ok':'no'}"></div>${l}</div>`).join('')}</div>
+  </div>`;
+}
+
+function cardHTML(t) {
+  const upd = t.updated ? new Date(t.updated).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'N/A';
+  return `<div class="team-card" id="card-${t.id}">
+    <div class="card-head">
+      <div class="card-head-l">
+        <div class="boat-badge">${t.boatnum||'?'}</div>
+        <div>
+          <div class="team-name-t">${t.teamname||'Unnamed'}</div>
+          <div class="team-meta">${[t.class,t.notes].filter(Boolean).join(' &mdash; ')}</div>
+        </div>
+      </div>
+      <div class="card-head-r">${racesBadge(t)} ${payBadge(t)}</div>
+    </div>
+    <div class="card-body-inner">
+      ${roleHTML(t,'driver','Driver')}
+      ${roleHTML(t,'throttle','Throttleman')}
+      ${t.alt_name?roleHTML(t,'alt','Alternate'):''}
+    </div>
+    <div class="card-foot">
+      <div class="card-foot-note">Updated ${upd}</div>
+      <div class="card-actions">
+        <button class="btn-sm btn-sm-ol" onclick="doPrint('${t.id}')">&#128438; Print</button>
+        <button class="btn-sm btn-sm-ol" onclick="openEdit('${t.id}')">Edit</button>
+        <button class="btn-sm btn-sm-r" onclick="delTeam('${t.id}')">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// MODAL
+function buildRRG(t) {
+  document.getElementById('rrg').innerHTML = (DB.races||[]).map(r => {
+    const rd = (t&&t.races&&t.races[r.id])||{};
+    return `<div class="rri">
+      <div class="rri-head"><div class="rri-name">${r.name}</div><div class="rri-date">${r.date}</div></div>
+      <div class="rri-body">
+        <label class="rri-check"><input type="checkbox" id="rr-${r.id}" ${rd.registered?'checked':''}> Registered</label>
+        <div class="pay-lbl">Entry Fee</div>
+        <select class="pay-sel" id="rp-${r.id}">
+          <option value="unpaid" ${(!rd.payment||rd.payment==='unpaid')?'selected':''}>Unpaid</option>
+          <option value="paid" ${rd.payment==='paid'?'selected':''}>Paid</option>
+          <option value="partial" ${rd.payment==='partial'?'selected':''}>Partial</option>
+        </select>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearForm() {
+  ['f-tn','f-bn','f-cl','f-nt','f-dn','f-dw','f-tn2','f-tw','f-an','f-aw'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  ['f-dr','f-dw2','f-dm','f-dd','f-tr','f-tw2','f-tm','f-td','f-ar','f-aw2','f-am','f-ad'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.checked=false;
+  });
+}
+
+function openAdd() {
+  editId = null;
+  document.getElementById('mtitle').textContent = 'Add Team';
+  document.getElementById('meid').textContent = '';
+  clearForm();
+  buildRRG(null);
+  document.getElementById('team-modal').classList.add('open');
+}
+
+function openEdit(id) {
+  const t = DB.teams.find(x=>x.id===id);
+  if (!t) return;
+  editId = id;
+  document.getElementById('mtitle').textContent = 'Edit Team';
+  document.getElementById('meid').textContent = 'ID: '+id;
+  document.getElementById('f-tn').value = t.teamname||'';
+  document.getElementById('f-bn').value = t.boatnum||'';
+  document.getElementById('f-cl').value = t.class||'';
+  document.getElementById('f-nt').value = t.notes||'';
+  document.getElementById('f-dn').value = t.driver_name||'';
+  document.getElementById('f-dw').value = t.driver_wpra||'';
+  document.getElementById('f-dr').checked = !!t.driver_rwo;
+  document.getElementById('f-dw2').checked = !!t.driver_wpramem;
+  document.getElementById('f-dm').checked = !!t.driver_medical;
+  document.getElementById('f-dd').checked = !!t.driver_dunker;
+  document.getElementById('f-tn2').value = t.throttle_name||'';
+  document.getElementById('f-tw').value = t.throttle_wpra||'';
+  document.getElementById('f-tr').checked = !!t.throttle_rwo;
+  document.getElementById('f-tw2').checked = !!t.throttle_wpramem;
+  document.getElementById('f-tm').checked = !!t.throttle_medical;
+  document.getElementById('f-td').checked = !!t.throttle_dunker;
+  document.getElementById('f-an').value = t.alt_name||'';
+  document.getElementById('f-aw').value = t.alt_wpra||'';
+  document.getElementById('f-ar').checked = !!t.alt_rwo;
+  document.getElementById('f-aw2').checked = !!t.alt_wpramem;
+  document.getElementById('f-am').checked = !!t.alt_medical;
+  document.getElementById('f-ad').checked = !!t.alt_dunker;
+  buildRRG(t);
+  document.getElementById('team-modal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('team-modal').classList.remove('open'); }
+
+function saveTeam() {
+  const tn = document.getElementById('f-tn').value.trim();
+  if (!tn) { toast('Team name is required','r'); return; }
+  const races = {};
+  (DB.races||[]).forEach(r => {
+    races[r.id] = {
+      registered: document.getElementById('rr-'+r.id).checked,
+      payment: document.getElementById('rp-'+r.id).value
+    };
+  });
+  const d = {
+    teamname:tn, boatnum:document.getElementById('f-bn').value.trim(),
+    class:document.getElementById('f-cl').value, notes:document.getElementById('f-nt').value.trim(),
+    driver_name:document.getElementById('f-dn').value.trim(), driver_wpra:document.getElementById('f-dw').value.trim(),
+    driver_rwo:document.getElementById('f-dr').checked, driver_wpramem:document.getElementById('f-dw2').checked,
+    driver_medical:document.getElementById('f-dm').checked, driver_dunker:document.getElementById('f-dd').checked,
+    throttle_name:document.getElementById('f-tn2').value.trim(), throttle_wpra:document.getElementById('f-tw').value.trim(),
+    throttle_rwo:document.getElementById('f-tr').checked, throttle_wpramem:document.getElementById('f-tw2').checked,
+    throttle_medical:document.getElementById('f-tm').checked, throttle_dunker:document.getElementById('f-td').checked,
+    alt_name:document.getElementById('f-an').value.trim(), alt_wpra:document.getElementById('f-aw').value.trim(),
+    alt_rwo:document.getElementById('f-ar').checked, alt_wpramem:document.getElementById('f-aw2').checked,
+    alt_medical:document.getElementById('f-am').checked, alt_dunker:document.getElementById('f-ad').checked,
+    races, updated: new Date().toISOString()
+  };
+  if (editId) {
+    const i = DB.teams.findIndex(x=>x.id===editId);
+    if (i>=0) { d.id=editId; DB.teams[i]=d; }
+  } else {
+    d.id = 'team_'+Date.now();
+    DB.teams.push(d);
+  }
+  closeModal();
+  renderStats();
+  renderTeams();
+  toast(editId?'Team updated':'Team added','g');
+  queueSave();
+}
+
+function delTeam(id) {
+  if (!confirm('Delete this team? This cannot be undone.')) return;
+  DB.teams = DB.teams.filter(t=>t.id!==id);
+  renderStats(); renderTeams();
+  toast('Team deleted','r');
+  queueSave();
+}
+
+// PRINT
+function doPrint(id) {
+  const t = DB.teams.find(x=>x.id===id);
+  if (!t) return;
+  const race = curRace!=='all' ? (DB.races||[]).find(r=>r.id===curRace) : null;
+  const evtLbl = race ? race.name+' &mdash; '+race.date : 'All Events &mdash; '+(DB.season||'2025')+' Season';
+
+  function pdot(val) { return val ? '<div class="pc-dot ok"></div>' : '<div class="pc-dot no"></div>'; }
+
+  function pcRole(role, lbl) {
+    const nm = t[role+'_name'];
+    if (!nm) return '';
+    return `<div class="pc-role">
+      <div class="pc-rlbl">${lbl}</div>
+      <div class="pc-rname">${nm}</div>
+      <div class="pc-rwpra">${t[role+'_wpra']?'WPRA #'+t[role+'_wpra']:'&nbsp;'}</div>
+      <div class="pc-checks">
+        <div class="pc-chk">${pdot(t[role+'_rwo'])} RWO Member</div>
+        <div class="pc-chk">${pdot(t[role+'_wpramem'])} WPRA Member</div>
+        <div class="pc-chk">${pdot(t[role+'_medical'])} Medical Certificate</div>
+        <div class="pc-chk">${pdot(t[role+'_dunker'])} Dunker Test</div>
+      </div>
+    </div>`;
+  }
+
+  function payStatus(rid) {
+    if (!t.races||!t.races[rid]||!t.races[rid].registered) return '<span class="pc-pay-status na">N/A</span>';
+    const p = t.races[rid].payment||'unpaid';
+    return `<span class="pc-pay-status ${p}">${p.charAt(0).toUpperCase()+p.slice(1)}</span>`;
+  }
+
+  document.getElementById('print-content').innerHTML = `
+    <div class="pc-hdr">
+      <div><div class="pc-org">Race World Offshore</div><div class="pc-event-lbl">${evtLbl}</div></div>
+      <div class="pc-boat">${t.boatnum||'?'}</div>
+    </div>
+    <div class="pc-team-row">
+      <div class="pc-tname">${t.teamname}</div>
+      ${t.class?`<div class="pc-cls">${t.class}</div>`:''}
+    </div>
+    <div class="pc-crew">
+      ${pcRole('driver','Driver')}
+      ${pcRole('throttle','Throttleman')}
+      ${t.alt_name?pcRole('alt','Alternate'):''}
+    </div>
+    <div class="pc-pay">
+      <div class="pc-pay-hdr">Entry Fee &mdash; Payment Status</div>
+      <div class="pc-pay-grid">
+        ${(DB.races||[]).map(r=>`<div class="pc-pay-cell"><div class="pc-pay-race">${r.name}</div>${payStatus(r.id)}</div>`).join('')}
+      </div>
+    </div>
+    <div class="pc-ftr">
+      <div class="pc-ftr-note">Printed ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+      <div class="pc-ftr-logo">RWO</div>
+    </div>`;
+  document.getElementById('print-overlay').classList.add('open');
+}
+
+function closePrint() { document.getElementById('print-overlay').classList.remove('open'); }
+
+// TOAST
+let toastTmr;
+function toast(msg, color) {
+  document.getElementById('tmsg').textContent = msg;
+  document.getElementById('tdot').style.background = color==='r'?'var(--red)':color==='a'?'var(--amber)':'var(--green)';
+  const el = document.getElementById('toast');
+  el.classList.add('show');
+  clearTimeout(toastTmr);
+  toastTmr = setTimeout(()=>el.classList.remove('show'), 3000);
+}
+
+// BOOT
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('rwo_cfg');
+  if (saved) { try { CFG = JSON.parse(saved); initApp(); return; } catch(e){} }
+  document.getElementById('setup-screen').style.display = 'flex';
+});
+</script>
+</body>
+</html>
