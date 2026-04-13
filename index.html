@@ -453,7 +453,7 @@ button,input,select{font-family:inherit;}
 <div class="toast" id="toast"><div class="tdot" id="tdot"></div><span id="tmsg"></span></div>
 
 <!-- Hidden container for PDF generation -->
-<div id="pdf-render" style="position:fixed;left:-9999px;top:0;width:580px;"></div>
+<div id="pdf-render" style="position:fixed;left:-9999px;top:0;width:580px;font-family:'DM Sans',sans-serif;"></div>
 
 <script>
 const GH_OWNER='dylanfostercoxgp';
@@ -887,7 +887,7 @@ async function downloadAllPDFs(){
   toast(`Generating PDFs (0/${sorted.length})...`,'a');
   for(let i=0;i<sorted.length;i++){
     const t=sorted[i];
-    container.innerHTML=`<div class="pc" style="padding:22px 26px;color:#111;background:#fff;font-family:'DM Sans',sans-serif;">${buildPrintHTML(t)}</div>`;
+    container.innerHTML=`<div class="print-box" style="width:580px;background:#fff;font-family:'DM Sans',sans-serif;"><div class="pc">${buildPrintHTML(t)}</div></div>`;
     const el=container.firstElementChild;
     const fname=`${(t.boatnum||'00').toString().padStart(3,'0')}_${(t.teamname||'Team').replace(/[^a-zA-Z0-9]/g,'_')}.pdf`;
     try{
