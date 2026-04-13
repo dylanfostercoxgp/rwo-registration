@@ -3,9 +3,9 @@
     {
       "teamname": "Dirty Money Racing",
       "boatnum": "3",
-      "boat_color": "#111111",
+      "boat_color": "#ff7300",
       "class": "Super Cat",
-      "notes": "",
+      "notes": "Test",
       "driver_name": "Brit Lilly",
       "driver_apba": "13453",
       "driver_rwo": false,
@@ -60,7 +60,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T17:51:02.846Z",
+      "updated": "2026-04-13T17:51:40.945Z",
       "id": "team_1776092503277"
     }
   ],
