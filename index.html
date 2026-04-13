@@ -457,7 +457,7 @@ button,input,select{font-family:inherit;}
 <script>
 const GH_OWNER='dylanfostercoxgp';
 const GH_REPO='rwo-registration';
-const GH_TOKEN='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';
+const GH_TOKEN='PASTE_YOUR_NEW_TOKEN_HERE';
 const APP_PW='rwo2026';
 const DB_FILE='data.json';
 const CLASSES=['Super Cat','Super Stock','Class 1','Factory Stock','Super Vee','Modified V','Bracket Class 2','Bracket Class 3','Bracket Class 4','Bracket Class 5','Bracket Class 6','Bracket Class 7','Cat 300','Extreme'];
@@ -506,8 +506,11 @@ async function loadData(){
     const f=await ghGet(DB_FILE);
     if(f){DB=JSON.parse(decodeURIComponent(escape(atob(f.content.replace(/\n/g,'')))));DB._sha=f.sha;}
     else{DB={teams:[],races:DEFAULT_RACES,season:'2026'};await saveData();}
-    if(!DB.races||!DB.races.length)DB.races=DEFAULT_RACES;
+    // Always use the races defined in code as the source of truth
+    DB.races=DEFAULT_RACES;
     setSave('saved');
+    // Persist updated races to GitHub so all devices see them
+    queueSave();
   }catch(e){setSave('error');toast('Load error: '+e.message,'r');}
 }
 async function saveData(){
