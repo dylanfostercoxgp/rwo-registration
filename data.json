@@ -1,5 +1,50 @@
 {
-  "teams": [],
+  "teams": [
+    {
+      "teamname": "Dirty Money Racing",
+      "boatnum": "3",
+      "class": "Super Cat",
+      "notes": "",
+      "driver_name": "Brit Lilly",
+      "driver_wpra": "12345",
+      "driver_rwo": true,
+      "driver_wpramem": true,
+      "driver_medical": true,
+      "driver_dunker": true,
+      "throttle_name": "Bill Pyburn",
+      "throttle_wpra": "67890",
+      "throttle_rwo": true,
+      "throttle_wpramem": true,
+      "throttle_medical": false,
+      "throttle_dunker": false,
+      "alt_name": "",
+      "alt_wpra": "",
+      "alt_rwo": false,
+      "alt_wpramem": false,
+      "alt_medical": false,
+      "alt_dunker": false,
+      "races": {
+        "clearwater": {
+          "registered": true,
+          "payment": "paid"
+        },
+        "miami": {
+          "registered": true,
+          "payment": "unpaid"
+        },
+        "bimini": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "nassau": {
+          "registered": false,
+          "payment": "unpaid"
+        }
+      },
+      "updated": "2026-04-13T15:01:43.276Z",
+      "id": "team_1776092503277"
+    }
+  ],
   "races": [
     {
       "id": "clearwater",
