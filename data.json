@@ -30,7 +30,7 @@
         },
         "miami": {
           "registered": true,
-          "payment": "paid"
+          "payment": "unpaid"
         },
         "bimini": {
           "registered": false,
@@ -41,7 +41,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T15:02:10.882Z",
+      "updated": "2026-04-13T15:02:22.887Z",
       "id": "team_1776092503277"
     }
   ],
