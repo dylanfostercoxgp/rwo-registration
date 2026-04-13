@@ -155,7 +155,7 @@
       "alt_dunker": false,
       "alt_medical_date": "",
       "alt_dunker_date": "",
-      "alt_rwo_pay": "paid",
+      "alt_rwo_pay": "unpaid",
       "alt_apba_pay": "unpaid",
       "crew": [],
       "races": {
@@ -176,7 +176,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T19:14:36.425Z",
+      "updated": "2026-04-13T19:14:50.174Z",
       "id": "team_1776107628421"
     }
   ],
