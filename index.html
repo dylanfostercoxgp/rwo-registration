@@ -373,6 +373,13 @@ button,input,select{font-family:inherit;}
         <div class="field"><label>Notes</label><input type="text" id="f-nt" placeholder="Optional"></div>
       </div>
 
+      <div class="msec">Key West Only</div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <label class="dchk"><input type="checkbox" id="f-kw-loc"> Location Assignment</label>
+        <label class="dchk"><input type="checkbox" id="f-kw-duval"> Duval Entry</label>
+        <div class="mem-paid-item" style="margin:0;"><span class="mem-paid-lbl">Duval Payment</span><select class="mem-paid-sel" id="f-kw-duvalp"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+      </div>
+
       <div class="msec">Race Registration &amp; Entry Fee</div>
       <div class="race-reg-grid" id="rrg"></div>
 
@@ -387,13 +394,15 @@ button,input,select{font-family:inherit;}
         <label class="dchk"><input type="checkbox" id="f-dm"> Medical Cert</label>
         <label class="dchk"><input type="checkbox" id="f-dd"> Dunker Test</label>
       </div>
-      <div class="date-row">
-        <div class="field"><label>Medical Cert Date</label><input type="date" id="f-dmd"></div>
-        <div class="field"><label>Dunker Test Date</label><input type="date" id="f-ddd"></div>
-      </div>
-      <div class="mem-paid-row">
-        <div class="mem-paid-item"><span class="mem-paid-lbl">RWO Fee &mdash; Driver</span><select class="mem-paid-sel" id="f-drwop"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
-        <div class="mem-paid-item"><span class="mem-paid-lbl">APBA Fee &mdash; Driver</span><select class="mem-paid-sel" id="f-dapbap"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+      <div class="fg2" style="margin-top:8px">
+        <div class="mem-paid-row" style="margin-top:0">
+          <div class="mem-paid-item"><span class="mem-paid-lbl">RWO Fee</span><select class="mem-paid-sel" id="f-drwop"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+          <div class="mem-paid-item"><span class="mem-paid-lbl">APBA Fee</span><select class="mem-paid-sel" id="f-dapbap"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+        </div>
+        <div class="date-row" style="margin-top:0">
+          <div class="field"><label>Medical Date</label><input type="date" id="f-dmd"></div>
+          <div class="field"><label>Dunker Date</label><input type="date" id="f-ddd"></div>
+        </div>
       </div>
 
       <div class="msec">Throttleman</div>
@@ -407,13 +416,15 @@ button,input,select{font-family:inherit;}
         <label class="dchk"><input type="checkbox" id="f-tm"> Medical Cert</label>
         <label class="dchk"><input type="checkbox" id="f-td"> Dunker Test</label>
       </div>
-      <div class="date-row">
-        <div class="field"><label>Medical Cert Date</label><input type="date" id="f-tmd"></div>
-        <div class="field"><label>Dunker Test Date</label><input type="date" id="f-tdd"></div>
-      </div>
-      <div class="mem-paid-row">
-        <div class="mem-paid-item"><span class="mem-paid-lbl">RWO Fee &mdash; Throttleman</span><select class="mem-paid-sel" id="f-trwop"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
-        <div class="mem-paid-item"><span class="mem-paid-lbl">APBA Fee &mdash; Throttleman</span><select class="mem-paid-sel" id="f-tapbap"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+      <div class="fg2" style="margin-top:8px">
+        <div class="mem-paid-row" style="margin-top:0">
+          <div class="mem-paid-item"><span class="mem-paid-lbl">RWO Fee</span><select class="mem-paid-sel" id="f-trwop"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+          <div class="mem-paid-item"><span class="mem-paid-lbl">APBA Fee</span><select class="mem-paid-sel" id="f-tapbap"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+        </div>
+        <div class="date-row" style="margin-top:0">
+          <div class="field"><label>Medical Date</label><input type="date" id="f-tmd"></div>
+          <div class="field"><label>Dunker Date</label><input type="date" id="f-tdd"></div>
+        </div>
       </div>
 
       <div class="msec">Alternate Driver / Throttleman / Navigator</div>
@@ -427,13 +438,15 @@ button,input,select{font-family:inherit;}
         <label class="dchk"><input type="checkbox" id="f-am"> Medical Cert</label>
         <label class="dchk"><input type="checkbox" id="f-ad"> Dunker Test</label>
       </div>
-      <div class="date-row">
-        <div class="field"><label>Medical Cert Date</label><input type="date" id="f-amd"></div>
-        <div class="field"><label>Dunker Test Date</label><input type="date" id="f-add"></div>
-      </div>
-      <div class="mem-paid-row">
-        <div class="mem-paid-item"><span class="mem-paid-lbl">RWO Fee &mdash; Alt</span><select class="mem-paid-sel" id="f-arwop"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
-        <div class="mem-paid-item"><span class="mem-paid-lbl">APBA Fee &mdash; Alt</span><select class="mem-paid-sel" id="f-aapbap"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+      <div class="fg2" style="margin-top:8px">
+        <div class="mem-paid-row" style="margin-top:0">
+          <div class="mem-paid-item"><span class="mem-paid-lbl">RWO Fee</span><select class="mem-paid-sel" id="f-arwop"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+          <div class="mem-paid-item"><span class="mem-paid-lbl">APBA Fee</span><select class="mem-paid-sel" id="f-aapbap"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+        </div>
+        <div class="date-row" style="margin-top:0">
+          <div class="field"><label>Medical Date</label><input type="date" id="f-amd"></div>
+          <div class="field"><label>Dunker Date</label><input type="date" id="f-add"></div>
+        </div>
       </div>
 
       <div class="msec">Crew Members</div>
@@ -643,6 +656,11 @@ function racesBadge(t){
   return`<span class="pill p-ac">${reg.map(r=>r.name).join(', ')}</span>`;
 }
 function fmtDate(d){if(!d)return'';try{const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return d;}}
+function feesPills(t,role){
+  const rwo=t[role+'_rwo_pay']||'unpaid';
+  const apba=t[role+'_apba_pay']||'unpaid';
+  return`<div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;"><span class="pill ${rwo==='paid'?'p-green':'p-red'}" style="font-size:9px;">RWO ${rwo==='paid'?'Paid':'Unpaid'}</span><span class="pill ${apba==='paid'?'p-green':'p-red'}" style="font-size:9px;">APBA ${apba==='paid'?'Paid':'Unpaid'}</span></div>`;
+}
 function roleHTML(t,role,lbl){
   const nm=t[role+'_name'];if(!nm)return'';
   const keys=[['rwo','RWO Member'],['apbamem','APBA Member'],['medical','Medical Cert'],['dunker','Dunker Test']];
@@ -653,7 +671,7 @@ function roleHTML(t,role,lbl){
     if(k==='medical')extra=medDate;
     if(k==='dunker')extra=dunkDate;
     return`<div class="check-item"><div class="cdot ${credCheck(t,role,k)?'ok':'no'}"></div>${l}${extra}</div>`;
-  }).join('')}</div></div>`;
+  }).join('')}</div>${feesPills(t,role)}</div>`;
 }
 function crewHTML(t){
   const crew=t.crew||[];if(!crew.length)return'';
@@ -723,8 +741,8 @@ function getCrewFromForm(){
 }
 function clearForm(){
   ['f-tn','f-bn','f-cl','f-nt','f-dn','f-dw','f-tn2','f-tw','f-an','f-aw','f-dmd','f-ddd','f-tmd','f-tdd','f-amd','f-add'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['f-dr','f-dw2','f-dm','f-dd','f-tr','f-tw2','f-tm','f-td','f-ar','f-aw2','f-am','f-ad'].forEach(id=>{const el=document.getElementById(id);if(el)el.checked=false;});
-  ['f-drwop','f-dapbap','f-trwop','f-tapbap','f-arwop','f-aapbap'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='unpaid';});
+  ['f-dr','f-dw2','f-dm','f-dd','f-tr','f-tw2','f-tm','f-td','f-ar','f-aw2','f-am','f-ad','f-kw-loc','f-kw-duval'].forEach(id=>{const el=document.getElementById(id);if(el)el.checked=false;});
+  ['f-drwop','f-dapbap','f-trwop','f-tapbap','f-arwop','f-aapbap','f-kw-duvalp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='unpaid';});
   document.getElementById('f-bc').value='#111111';
   document.getElementById('crew-rows').innerHTML='';crewCt=0;
 }
@@ -750,6 +768,8 @@ function openEdit(id){
   document.getElementById('f-am').checked=!!t.alt_medical;document.getElementById('f-ad').checked=!!t.alt_dunker;
   document.getElementById('f-amd').value=t.alt_medical_date||'';document.getElementById('f-add').value=t.alt_dunker_date||'';
   document.getElementById('f-arwop').value=t.alt_rwo_pay||'unpaid';document.getElementById('f-aapbap').value=t.alt_apba_pay||'unpaid';
+  document.getElementById('f-kw-loc').checked=!!t.kw_location;document.getElementById('f-kw-duval').checked=!!t.kw_duval;
+  document.getElementById('f-kw-duvalp').value=t.kw_duval_pay||'unpaid';
   buildCrewRows(t.crew);buildRRG(t);document.getElementById('team-modal').classList.add('open');
 }
 function closeModal(){document.getElementById('team-modal').classList.remove('open');}
@@ -774,6 +794,8 @@ function saveTeam(){
     alt_medical:document.getElementById('f-am').checked,alt_dunker:document.getElementById('f-ad').checked,
     alt_medical_date:document.getElementById('f-amd').value,alt_dunker_date:document.getElementById('f-add').value,
     alt_rwo_pay:document.getElementById('f-arwop').value,alt_apba_pay:document.getElementById('f-aapbap').value,
+    kw_location:document.getElementById('f-kw-loc').checked,kw_duval:document.getElementById('f-kw-duval').checked,
+    kw_duval_pay:document.getElementById('f-kw-duvalp').value,
     crew:getCrewFromForm(),races,updated:new Date().toISOString()
   };
   if(editId){const i=DB.teams.findIndex(x=>x.id===editId);if(i>=0){d.id=editId;DB.teams[i]=d;}}
@@ -803,11 +825,19 @@ function buildPrintHTML(t){
     const rd=(t.races&&t.races[race.id])||{};
     const isReg=!!rd.registered;
     const isPaid=rd.payment==='paid';
+    const isKW=race.id==='keywest';
+    const kwCols=isKW?'repeat(4,1fr)':'1fr 1fr';
+    let kwExtra='';
+    if(isKW){
+      kwExtra=`<div class="pc-mp-cell" style="border-right:1px solid #e0e0e0;border-radius:0;"><div class="pc-mp-lbl">Location Assignment</div><div class="pc-mp-val">${grtxt(!!t.kw_location,'Complete','Not Complete')}</div></div>
+        <div class="pc-mp-cell" style="border-radius:0;"><div class="pc-mp-lbl">Duval Entry</div><div class="pc-mp-val">${grtxt(!!t.kw_duval,'Yes','N/A')}</div></div>`;
+    }
     entryStatusSec=`<div style="border:1px solid #e0e0e0;border-radius:7px;overflow:hidden;margin-bottom:10px;">
       <div style="background:#111 !important;color:#fff !important;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:5px 11px;print-color-adjust:exact;-webkit-print-color-adjust:exact;">Entry Status &mdash; ${race.name}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+      <div style="display:grid;grid-template-columns:${kwCols};gap:0;">
         <div class="pc-mp-cell" style="border-right:1px solid #e0e0e0;border-radius:0;"><div class="pc-mp-lbl">Registration</div><div class="pc-mp-val">${grtxt(isReg,'Registered','Not Registered')}</div></div>
-        <div class="pc-mp-cell" style="border-radius:0;"><div class="pc-mp-lbl">Entry Fee</div><div class="pc-mp-val">${grtxt(isPaid,'Paid','Unpaid')}</div></div>
+        <div class="pc-mp-cell" style="${isKW?'border-right:1px solid #e0e0e0;':''}border-radius:0;"><div class="pc-mp-lbl">Entry Fee</div><div class="pc-mp-val">${grtxt(isPaid,'Paid','Unpaid')}</div></div>
+        ${kwExtra}
       </div></div>`;
   }else{
     entryStatusSec=`<div style="border:1px solid #e0e0e0;border-radius:7px;overflow:hidden;margin-bottom:10px;">
@@ -839,6 +869,11 @@ function buildPrintHTML(t){
     const rd=(t.races&&t.races[r.id])||{};
     if(!rd.registered)regMissing.push(r.name+' Registration');
     if(rd.payment!=='paid')regMissing.push(r.name+' Entry Fee');
+    if(r.id==='keywest'){
+      if(!t.kw_location)regMissing.push('Key West Location Assignment');
+      if(!t.kw_duval)regMissing.push('Key West Duval Entry');
+      if((t.kw_duval_pay||'unpaid')!=='paid')regMissing.push('Key West Duval Payment');
+    }
   });
   (t.crew||[]).forEach(c=>{if(c.paid!=='paid')crewMissing.push(c.name+' &mdash; Unpaid');});
 
@@ -977,7 +1012,10 @@ function buildExportRows(){
       'Alt Medical':t.alt_medical?'Yes':'No','Alt Medical Date':t.alt_medical_date||'',
       'Alt Dunker':t.alt_dunker?'Yes':'No','Alt Dunker Date':t.alt_dunker_date||'',
       'Alt RWO Fee':t.alt_rwo_pay||'unpaid','Alt APBA Fee':t.alt_apba_pay||'unpaid',
-      'Crew Members':(t.crew||[]).map(c=>c.name+(c.paid==='paid'?' (Paid)':' (Unpaid)')).join('; ')
+      'Crew Members':(t.crew||[]).map(c=>c.name+(c.paid==='paid'?' (Paid)':' (Unpaid)')).join('; '),
+      'KW Location Assignment':t.kw_location?'Yes':'No',
+      'KW Duval Entry':t.kw_duval?'Yes':'No',
+      'KW Duval Payment':t.kw_duval_pay||'unpaid'
     };
     races.forEach(r=>{
       const rd=(t.races&&t.races[r.id])||{};
