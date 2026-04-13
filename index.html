@@ -470,6 +470,18 @@ const DEFAULT_RACES=[
 let DB={teams:[],races:DEFAULT_RACES,season:'2026'};
 let editId=null,curRace='all',saveTimer=null,crewCt=0;
 
+// Preload RWO logo as base64 for PDF rendering (avoids CORS issues with html2pdf)
+let RWO_LOGO_B64='';
+(function(){
+  const img=new Image();img.crossOrigin='anonymous';
+  img.onload=function(){
+    try{const c=document.createElement('canvas');c.width=img.width;c.height=img.height;
+    c.getContext('2d').drawImage(img,0,0);RWO_LOGO_B64=c.toDataURL('image/png');}catch(e){}
+  };
+  img.src='https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png';
+})();
+function logoSrc(){return RWO_LOGO_B64||'https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png';}
+
 // Token stored in localStorage, never in source code (prevents GitHub from revoking it)
 function getToken(){return localStorage.getItem('rwo_gh_token')||'';}
 function setToken(t){localStorage.setItem('rwo_gh_token',t);}
@@ -734,7 +746,8 @@ function buildPrintHTML(t){
     if((t[role+'_rwo_pay']||'unpaid')==='unpaid')arr.push('RWO Fee');
     if((t[role+'_apba_pay']||'unpaid')==='unpaid')arr.push('APBA Fee');
   });
-  (DB.races||[]).forEach(r=>{if(t.races&&t.races[r.id]&&t.races[r.id].registered&&t.races[r.id].payment!=='paid')raceMissing.push(r.name+' Entry Fee');});
+  const printRaces=race?[race]:(DB.races||[]);
+  printRaces.forEach(r=>{if(t.races&&t.races[r.id]&&t.races[r.id].registered&&t.races[r.id].payment!=='paid')raceMissing.push(r.name+' Entry Fee');});
   (t.crew||[]).forEach(c=>{if(c.paid!=='paid')crewMissing.push(c.name+' &mdash; Unpaid');});
 
   const allComplete=!driverMissing.length&&!throttleMissing.length&&!raceMissing.length&&!crewMissing.length;
@@ -793,10 +806,13 @@ function buildPrintHTML(t){
         <div class="pc-tname-main">${t.teamname}</div>
         ${t.class?`<div class="pc-cls-main">${t.class}</div>`:''}
       </div>
-      <div class="pc-boat" style="background:${bc};print-color-adjust:exact;-webkit-print-color-adjust:exact;">${t.boatnum||'?'}</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div class="pc-boat" style="background:${bc};print-color-adjust:exact;-webkit-print-color-adjust:exact;">${t.boatnum||'?'}</div>
+        <img src="${logoSrc()}" alt="RWO" style="width:60px;height:auto;" onerror="this.style.display='none'">
+      </div>
     </div>
     <div class="pc-org-row">
-      <div class="pc-logo-row"><img class="pc-logo-img" src="https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png" alt="Race World Offshore" onerror="this.style.display='none'"><div class="pc-org">Race World Offshore</div></div>
+      <div class="pc-org">Race World Offshore</div>
       <div class="pc-evtlbl">${evtLbl}</div>
     </div>
     <div class="pc-mempaid">
@@ -807,9 +823,9 @@ function buildPrintHTML(t){
     </div>
     <div class="pc-crew-grid">${pcRole('driver','Driver')}${pcRole('throttle','Throttleman')}${t.alt_name?pcRole('alt','Alternate'):''}</div>
     ${crewSec}
-    <div class="pc-pay"><div class="pc-pay-hdr" style="background:#111 !important;color:#fff !important;">Entry Fee &mdash; Payment Status Per Race</div><div class="pc-pay-grid">${(DB.races||[]).map(r=>`<div class="pc-pay-cell"><div class="pc-pay-race">${r.name}</div>${payStatus(r.id)}</div>`).join('')}</div></div>
+    <div class="pc-pay"><div class="pc-pay-hdr" style="background:#111 !important;color:#fff !important;">Entry Fee &mdash; ${race?race.name:'Payment Status Per Race'}</div><div class="pc-pay-grid">${printRaces.map(r=>`<div class="pc-pay-cell"><div class="pc-pay-race">${r.name}</div>${payStatus(r.id)}</div>`).join('')}</div></div>
     ${verifySec}
-    <div class="pc-ftr"><div class="pc-ftr-note">Printed ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div><div class="pc-ftr-logo"><img src="https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png" alt="RWO" style="height:18px;width:auto;opacity:.5;" onerror="this.outerHTML='RWO'"></div></div>`;
+    <div class="pc-ftr"><div class="pc-ftr-note">Printed ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div><div class="pc-ftr-logo"><img src="${logoSrc()}" alt="RWO" style="height:18px;width:auto;opacity:.5;" onerror="this.outerHTML='RWO'"></div></div>`;
 }
 
 function doPrint(id){
