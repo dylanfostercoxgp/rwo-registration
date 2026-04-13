@@ -61,14 +61,14 @@
         },
         "clearwater": {
           "registered": true,
-          "payment": "paid"
+          "payment": "unpaid"
         },
         "keywest": {
           "registered": false,
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T17:10:34.655Z",
+      "updated": "2026-04-13T17:11:21.051Z",
       "id": "team_1776092503277"
     }
   ],
