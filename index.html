@@ -373,13 +373,6 @@ button,input,select{font-family:inherit;}
         <div class="field"><label>Notes</label><input type="text" id="f-nt" placeholder="Optional"></div>
       </div>
 
-      <div class="msec">Key West Only</div>
-      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-        <label class="dchk"><input type="checkbox" id="f-kw-loc"> Location Assignment</label>
-        <label class="dchk"><input type="checkbox" id="f-kw-duval"> Duval Entry</label>
-        <div class="mem-paid-item" style="margin:0;"><span class="mem-paid-lbl">Duval Payment</span><select class="mem-paid-sel" id="f-kw-duvalp"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
-      </div>
-
       <div class="msec">Race Registration &amp; Entry Fee</div>
       <div class="race-reg-grid" id="rrg"></div>
 
@@ -659,7 +652,7 @@ function fmtDate(d){if(!d)return'';try{const dt=new Date(d+'T00:00:00');return d
 function feesPills(t,role){
   const rwo=t[role+'_rwo_pay']||'unpaid';
   const apba=t[role+'_apba_pay']||'unpaid';
-  return`<div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;"><span class="pill ${rwo==='paid'?'p-green':'p-red'}" style="font-size:9px;">RWO ${rwo==='paid'?'Paid':'Unpaid'}</span><span class="pill ${apba==='paid'?'p-green':'p-red'}" style="font-size:9px;">APBA ${apba==='paid'?'Paid':'Unpaid'}</span></div>`;
+  return`<div class="check-item"><div class="cdot ${rwo==='paid'?'ok':'no'}"></div>RWO Fee</div><div class="check-item"><div class="cdot ${apba==='paid'?'ok':'no'}"></div>APBA Fee</div>`;
 }
 function roleHTML(t,role,lbl){
   const nm=t[role+'_name'];if(!nm)return'';
@@ -671,7 +664,7 @@ function roleHTML(t,role,lbl){
     if(k==='medical')extra=medDate;
     if(k==='dunker')extra=dunkDate;
     return`<div class="check-item"><div class="cdot ${credCheck(t,role,k)?'ok':'no'}"></div>${l}${extra}</div>`;
-  }).join('')}</div>${feesPills(t,role)}</div>`;
+  }).join('')}${feesPills(t,role)}</div></div>`;
 }
 function crewHTML(t){
   const crew=t.crew||[];if(!crew.length)return'';
@@ -725,7 +718,16 @@ function renderTeams(){
 function buildRRG(t){
   document.getElementById('rrg').innerHTML=(DB.races||[]).map(r=>{
     const rd=(t&&t.races&&t.races[r.id])||{};
-    return`<div class="rri"><div class="rri-head"><div class="rri-name">${r.name}</div><div class="rri-date">${r.date}</div></div><div class="rri-body"><label class="rri-chk"><input type="checkbox" id="rr-${r.id}" ${rd.registered?'checked':''}> Registered</label><div class="pay-lbl">Entry Fee</div><select class="pay-sel" id="rp-${r.id}"><option value="unpaid" ${(!rd.payment||rd.payment==='unpaid')?'selected':''}>Unpaid</option><option value="paid" ${rd.payment==='paid'?'selected':''}>Paid</option><option value="partial" ${rd.payment==='partial'?'selected':''}>Partial</option></select></div></div>`;
+    let kwExtra='';
+    if(r.id==='keywest'){
+      kwExtra=`<div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;">
+        <label class="rri-chk"><input type="checkbox" id="f-kw-loc" ${t&&t.kw_location?'checked':''}> Location Assignment</label>
+        <label class="rri-chk"><input type="checkbox" id="f-kw-duval" ${t&&t.kw_duval?'checked':''}> Duval Entry</label>
+        <div class="pay-lbl">Duval Payment</div>
+        <select class="pay-sel" id="f-kw-duvalp"><option value="unpaid" ${(!t||!t.kw_duval_pay||t.kw_duval_pay==='unpaid')?'selected':''}>Unpaid</option><option value="paid" ${t&&t.kw_duval_pay==='paid'?'selected':''}>Paid</option></select>
+      </div>`;
+    }
+    return`<div class="rri"><div class="rri-head"><div class="rri-name">${r.name}</div><div class="rri-date">${r.date}</div></div><div class="rri-body"><label class="rri-chk"><input type="checkbox" id="rr-${r.id}" ${rd.registered?'checked':''}> Registered</label><div class="pay-lbl">Entry Fee</div><select class="pay-sel" id="rp-${r.id}"><option value="unpaid" ${(!rd.payment||rd.payment==='unpaid')?'selected':''}>Unpaid</option><option value="paid" ${rd.payment==='paid'?'selected':''}>Paid</option><option value="partial" ${rd.payment==='partial'?'selected':''}>Partial</option></select>${kwExtra}</div></div>`;
   }).join('');
 }
 function buildCrewRows(crew){crewCt=0;document.getElementById('crew-rows').innerHTML='';(crew||[]).forEach(c=>addCrewRow(c.name,c.paid));}
