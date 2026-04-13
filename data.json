@@ -178,6 +178,64 @@
       },
       "updated": "2026-04-13T19:14:50.174Z",
       "id": "team_1776107628421"
+    },
+    {
+      "teamname": "TFR/XInsurance",
+      "boatnum": "511",
+      "boat_color": "#111111",
+      "class": "Bracket Class 5",
+      "notes": "",
+      "driver_name": "JJ Turk",
+      "driver_apba": "",
+      "driver_rwo": true,
+      "driver_apbamem": false,
+      "driver_medical": false,
+      "driver_dunker": false,
+      "driver_medical_date": "",
+      "driver_dunker_date": "",
+      "driver_rwo_pay": "paid",
+      "driver_apba_pay": "unpaid",
+      "throttle_name": "Nick Buis",
+      "throttle_apba": "",
+      "throttle_rwo": false,
+      "throttle_apbamem": false,
+      "throttle_medical": false,
+      "throttle_dunker": false,
+      "throttle_medical_date": "",
+      "throttle_dunker_date": "",
+      "throttle_rwo_pay": "unpaid",
+      "throttle_apba_pay": "unpaid",
+      "alt_name": "",
+      "alt_apba": "",
+      "alt_rwo": false,
+      "alt_apbamem": false,
+      "alt_medical": false,
+      "alt_dunker": false,
+      "alt_medical_date": "",
+      "alt_dunker_date": "",
+      "alt_rwo_pay": "unpaid",
+      "alt_apba_pay": "unpaid",
+      "crew": [],
+      "races": {
+        "atlanticcity": {
+          "registered": true,
+          "payment": "unpaid"
+        },
+        "michigancity": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "clearwater": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "keywest": {
+          "registered": false,
+          "payment": "unpaid"
+        }
+      },
+      "updated": "2026-04-13T19:17:32.533Z",
+      "id": "team_1776107852533"
     }
   ],
   "races": [
