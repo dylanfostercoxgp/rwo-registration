@@ -76,9 +76,14 @@ button,input,select{font-family:inherit;}
 
 /* CLASS GROUPS */
 .class-group{margin-bottom:1.5rem;}
-.class-group-hdr{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:6px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;}
+.class-group-hdr{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:6px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer;user-select:none;transition:all .15s;}
+.class-group-hdr:hover{border-color:var(--accent);}
 .class-group-name{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:var(--accent);}
 .class-group-ct{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;}
+.class-group-arrow{font-size:12px;color:var(--text3);transition:transform .2s;margin-left:auto;}
+.class-group-arrow.open{transform:rotate(90deg);}
+.class-group .team-grid{display:none;}
+.class-group.open .team-grid{display:grid;}
 .team-grid{display:grid;gap:8px;}
 
 /* TEAM CARD */
@@ -329,6 +334,8 @@ button,input,select{font-family:inherit;}
         <option value="missing">Missing docs</option>
         <option value="complete">Docs complete</option>
       </select>
+      <button class="btn btn-ol" onclick="expandAll()" title="Expand all classes">&#9660; Expand All</button>
+      <button class="btn btn-ol" onclick="collapseAll()" title="Collapse all classes">&#9650; Collapse All</button>
       <button class="btn btn-ol" onclick="downloadAllPDFs()" title="Download all visible teams as individual PDFs">&#128196; Download All PDFs</button>
       <select class="fsel" id="export-sel" onchange="doExport(this.value);this.value='';" style="font-weight:600;">
         <option value="">&#128229; Export All...</option>
@@ -672,9 +679,12 @@ function crewHTML(t){
 function cardHTML(t){
   const upd=t.updated?new Date(t.updated).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'N/A';
   const bc=t.boat_color||'#111111';
-  return`<div class="team-card" id="card-${t.id}"><div class="card-head"><div class="card-head-l"><div class="boat-badge" style="background:${bc}">${t.boatnum||'?'}</div><div><div class="team-name-t">${t.teamname||'Unnamed'}</div><div class="team-meta">${[t.class,t.notes].filter(Boolean).join(' &mdash; ')}</div></div></div><div class="card-head-r">${racesBadge(t)} ${payBadge(t)}</div></div><div class="card-body-inner">${roleHTML(t,'driver','Driver')}${roleHTML(t,'throttle','Throttleman')}${t.alt_name?roleHTML(t,'alt','Alt / Navigator'):''}</div>${crewHTML(t)}<div class="card-foot"><div class="card-foot-note">Updated ${upd}</div><div class="card-actions"><button class="btn-sm btn-sm-ol" onclick="doPrint('${t.id}')">&#128438; Print</button><button class="btn-sm btn-sm-ol" onclick="openEdit('${t.id}')">Edit</button><button class="btn-sm btn-sm-r" onclick="delTeam('${t.id}')">Delete</button></div></div></div>`;
+  return`<div class="team-card" id="card-${t.id}"><div class="card-head"><div class="card-head-l"><div class="boat-badge" style="background:${bc}">${t.boatnum||'?'}</div><div><div class="team-name-t">${t.teamname||'Unnamed'}</div><div class="team-meta">${[t.class,t.notes].filter(Boolean).join(' &mdash; ')}</div></div></div><div class="card-head-r">${racesBadge(t)} ${payBadge(t)}</div></div><div class="card-body-inner">${roleHTML(t,'driver','Driver')}${roleHTML(t,'throttle','Throttleman')}${t.alt_name?roleHTML(t,'alt','Alt / Navigator'):''}</div>${crewHTML(t)}<div class="card-foot"><div class="card-foot-note">Updated ${upd}</div><div class="card-actions"><button class="btn-sm btn-sm-ol" onclick="doPrint('${t.id}')">&#128196; PDF</button><button class="btn-sm btn-sm-ol" onclick="openEdit('${t.id}')">Edit</button><button class="btn-sm btn-sm-r" onclick="delTeam('${t.id}')">Delete</button></div></div></div>`;
 }
 function renderAll(){renderStats();renderTeams();}
+function toggleClassGroup(hdr){hdr.parentElement.classList.toggle('open');hdr.querySelector('.class-group-arrow').classList.toggle('open');}
+function expandAll(){document.querySelectorAll('.class-group').forEach(g=>{g.classList.add('open');g.querySelector('.class-group-arrow').classList.add('open');});}
+function collapseAll(){document.querySelectorAll('.class-group').forEach(g=>{g.classList.remove('open');g.querySelector('.class-group-arrow').classList.remove('open');});}
 function renderStats(){
   const teams=getByRace();let paid=0,unpaid=0,docs=0;
   teams.forEach(t=>{
@@ -712,7 +722,7 @@ function renderTeams(){
   teams.forEach(t=>{const cl=t.class||'Unclassified';if(!grouped[cl])grouped[cl]=[];grouped[cl].push(t);});
   Object.keys(grouped).forEach(cl=>{grouped[cl].sort((a,b)=>{const na=parseInt(a.boatnum)||9999,nb=parseInt(b.boatnum)||9999;return na-nb||(a.boatnum||'').localeCompare(b.boatnum||'');});});
   const ordered=[...CLASSES.filter(cl=>grouped[cl]),...Object.keys(grouped).filter(cl=>!CLASSES.includes(cl))];
-  c.innerHTML=ordered.map(cl=>`<div class="class-group"><div class="class-group-hdr"><div class="class-group-name">${cl}</div><div class="class-group-ct">${grouped[cl].length} team${grouped[cl].length!==1?'s':''}</div></div><div class="team-grid">${grouped[cl].map(cardHTML).join('')}</div></div>`).join('');
+  c.innerHTML=ordered.map(cl=>`<div class="class-group" id="cg-${cl.replace(/\s+/g,'_')}"><div class="class-group-hdr" onclick="toggleClassGroup(this)"><div class="class-group-name">${cl}</div><div class="class-group-ct">${grouped[cl].length} team${grouped[cl].length!==1?'s':''}</div><div class="class-group-arrow">&#9654;</div></div><div class="team-grid">${grouped[cl].map(cardHTML).join('')}</div></div>`).join('');
 }
 function buildRRG(t){
   document.getElementById('rrg').innerHTML=(DB.races||[]).map(r=>{
@@ -880,15 +890,19 @@ function buildPrintHTML(t){
 
   function pcRole(role,lbl){
     const nm=t[role+'_name'];if(!nm)return'';
-    const keys=[['rwo','RWO Member'],['apbamem','APBA Member'],['medical','Medical Cert'],['dunker','Dunker Test']];
+    const rwo=(t[role+'_rwo_pay']||'unpaid')==='paid';
+    const apba=(t[role+'_apba_pay']||'unpaid')==='paid';
     const medDate=t[role+'_medical_date']?`<span class="pc-date-hint">${fmtDate(t[role+'_medical_date'])}</span>`:'';
     const dunkDate=t[role+'_dunker_date']?`<span class="pc-date-hint">${fmtDate(t[role+'_dunker_date'])}</span>`:'';
-    return`<div class="pc-role"><div class="pc-rlbl">${lbl}</div><div class="pc-rname">${nm}</div><div class="pc-rapba">${t[role+'_apba']?'APBA #'+t[role+'_apba']:'&nbsp;'}</div><div class="pc-checks">${keys.map(([k,l])=>{
-      let extra='';
-      if(k==='medical')extra=medDate;
-      if(k==='dunker')extra=dunkDate;
-      return`<div class="pc-chk">${pdot(credCheck(t,role,k))} ${l}${extra}</div>`;
-    }).join('')}</div></div>`;
+    const items=[
+      {dot:credCheck(t,role,'rwo'),label:'RWO Member'},
+      {dot:rwo,label:'RWO Fee'},
+      {dot:credCheck(t,role,'apbamem'),label:'APBA Member'},
+      {dot:apba,label:'APBA Fee'},
+      {dot:credCheck(t,role,'medical'),label:'Medical Cert',extra:medDate},
+      {dot:credCheck(t,role,'dunker'),label:'Dunker Test',extra:dunkDate}
+    ];
+    return`<div class="pc-role"><div class="pc-rlbl">${lbl}</div><div class="pc-rname">${nm}</div><div class="pc-rapba">${t[role+'_apba']?'APBA #'+t[role+'_apba']:'&nbsp;'}</div><div class="pc-checks">${items.map(it=>`<div class="pc-chk">${pdot(it.dot)} ${it.label}${it.extra||''}</div>`).join('')}</div></div>`;
   }
   const crewSec=(t.crew&&t.crew.length)?`<div class="pc-crew-list"><div class="pc-crew-hdr">Crew Members</div>${t.crew.map(c=>`<div class="pc-crew-row"><span class="pc-crew-name">${c.name}</span><span class="pc-crew-pay ${c.paid}" style="${c.paid==='paid'?'background:#e8f5ef !important;color:#2d8c5e !important;':'background:#fdeaea !important;color:#c0392b !important;'}">${c.paid==='paid'?'Paid':'Unpaid'}</span></div>`).join('')}</div>`:'';
 
@@ -925,7 +939,6 @@ function buildPrintHTML(t){
           <div class="pc-tname-main">${t.teamname}</div>
           ${t.class?`<div class="pc-cls-main" style="background:${cc} !important;print-color-adjust:exact;-webkit-print-color-adjust:exact;">${t.class}</div>`:''}
         </div>
-        <img src="${lg}" alt="RWO" style="height:28px;width:auto;margin-top:4px;" onerror="this.style.display='none'">
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
         <div class="pc-boat" style="background:${bc};print-color-adjust:exact;-webkit-print-color-adjust:exact;">${t.boatnum||'?'}</div>
@@ -949,15 +962,26 @@ function buildPrintHTML(t){
     <div class="pc-crew-grid">${pcRole('driver','Driver')}${pcRole('throttle','Throttleman')}${t.alt_name?pcRole('alt','Alt / Navigator'):''}</div>
     ${crewSec}
     ${verifySec}
-    <div class="pc-ftr"><div class="pc-ftr-note">Printed ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div><div class="pc-ftr-logo"><img src="${lg}" alt="RWO" style="height:18px;width:auto;opacity:.5;" onerror="this.outerHTML='RWO'"></div></div>`;
+    <div class="pc-ftr"><div class="pc-ftr-note">Printed ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div><div class="pc-ftr-logo">RWO</div></div>`;
 }
 
-function doPrint(id){
+async function doPrint(id){
   const t=DB.teams.find(x=>x.id===id);if(!t)return;
-  document.getElementById('print-content').innerHTML=buildPrintHTML(t);
-  document.getElementById('print-overlay').classList.add('open');
+  const container=document.getElementById('pdf-render');
+  container.innerHTML=`<div class="print-box" style="width:720px;max-width:720px;background:#fff;font-family:'DM Sans',sans-serif;"><div class="pc">${buildPrintHTML(t)}</div></div>`;
+  const el=container.firstElementChild;
+  const fname=`${(t.boatnum||'00').toString().padStart(3,'0')}_${(t.teamname||'Team').replace(/[^a-zA-Z0-9]/g,'_')}.pdf`;
+  toast('Generating PDF...','a');
+  try{
+    await html2pdf().set({
+      margin:[5,3,5,3],filename:fname,image:{type:'jpeg',quality:0.98},
+      html2canvas:{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',width:720},
+      jsPDF:{unit:'mm',format:'letter',orientation:'portrait'}
+    }).from(el).save();
+    toast('PDF downloaded!','g');
+  }catch(e){toast('PDF error: '+e.message,'r');}
+  container.innerHTML='';
 }
-function closePrint(){document.getElementById('print-overlay').classList.remove('open');}
 
 async function downloadAllPDFs(){
   const teams=getFilteredTeams();
