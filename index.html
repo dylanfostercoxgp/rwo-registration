@@ -472,13 +472,19 @@ let editId=null,curRace='all',saveTimer=null,crewCt=0;
 
 // Preload RWO logo as base64 for PDF rendering (avoids CORS issues with html2pdf)
 let RWO_LOGO_B64='';
-(function(){
-  const img=new Image();img.crossOrigin='anonymous';
-  img.onload=function(){
-    try{const c=document.createElement('canvas');c.width=img.width;c.height=img.height;
-    c.getContext('2d').drawImage(img,0,0);RWO_LOGO_B64=c.toDataURL('image/png');}catch(e){}
-  };
-  img.src='https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png';
+(async function(){
+  try{
+    const resp=await fetch('https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png');
+    const blob=await resp.blob();
+    const reader=new FileReader();
+    reader.onloadend=function(){RWO_LOGO_B64=reader.result;};
+    reader.readAsDataURL(blob);
+  }catch(e){
+    // Fallback: try canvas approach
+    const img=new Image();img.crossOrigin='anonymous';
+    img.onload=function(){try{const c=document.createElement('canvas');c.width=img.width;c.height=img.height;c.getContext('2d').drawImage(img,0,0);RWO_LOGO_B64=c.toDataURL('image/png');}catch(e2){}};
+    img.src='https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png';
+  }
 })();
 function logoSrc(){return RWO_LOGO_B64||'https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png';}
 
@@ -575,7 +581,7 @@ function buildNav(){
   document.getElementById('season-tag').textContent=(DB.season||'2026')+' Season';
 }
 function switchRace(el){document.querySelectorAll('.race-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');curRace=el.dataset.race;renderAll();}
-function getByRace(){if(!DB.teams)return[];if(curRace==='all')return DB.teams;return DB.teams.filter(t=>t.races&&t.races[curRace]&&t.races[curRace].registered);}
+function getByRace(){if(!DB.teams)return[];return DB.teams;}
 function missingDocs(t){return['driver','throttle'].some(r=>!t[r+'_rwo']||!t[r+'_apbamem']||!t[r+'_medical']||!t[r+'_dunker']);}
 function payBadge(t){
   const races=curRace==='all'?(DB.races||[]).map(r=>r.id):[curRace];
@@ -732,11 +738,38 @@ function buildPrintHTML(t){
   const race=curRace!=='all'?(DB.races||[]).find(r=>r.id===curRace):null;
   const evtLbl=race?race.name+' &mdash; '+race.date:'All Events &mdash; '+(DB.season||'2026')+' Season';
   const bc=t.boat_color||'#111111';
+  const lg=logoSrc();
   function pdot(val){return val?'<div class="pc-dot ok" style="background:#3db87a !important;print-color-adjust:exact;-webkit-print-color-adjust:exact;"></div>':'<div class="pc-dot no" style="background:#e05252 !important;print-color-adjust:exact;-webkit-print-color-adjust:exact;"></div>';}
+  function grtxt(v,y,n){return v?`<span style="color:#2d8c5e !important;font-weight:700;print-color-adjust:exact;-webkit-print-color-adjust:exact;">${y}</span>`:`<span style="color:#c0392b !important;font-weight:700;print-color-adjust:exact;-webkit-print-color-adjust:exact;">${n}</span>`;}
 
-  // Collect incomplete items grouped by category
-  const driverMissing=[], throttleMissing=[], raceMissing=[], crewMissing=[];
-  [['driver',t.driver_name,'Driver'],['throttle',t.throttle_name,'Throttleman']].forEach(([role,nm,lbl])=>{
+  const printRaces=race?[race]:(DB.races||[]);
+
+  // --- Race Status Section (above driver/throttle fees) ---
+  let raceStatusSec='';
+  if(race){
+    // Single race tab: show 2 side-by-side boxes for this race
+    const rd=(t.races&&t.races[race.id])||{};
+    const isReg=!!rd.registered;
+    const isPaid=rd.payment==='paid';
+    raceStatusSec=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+      <div class="pc-mp-cell"><div class="pc-mp-lbl">${race.name} Status</div><div class="pc-mp-val">${grtxt(isReg,'Registered','Not Registered')}</div></div>
+      <div class="pc-mp-cell"><div class="pc-mp-lbl">${race.name} Entry Fee</div><div class="pc-mp-val">${isReg?grtxt(isPaid,'Paid','Unpaid'):grtxt(false,'','N/A')}</div></div>
+    </div>`;
+  }else{
+    // All races tab: show 4 races with reg + paid
+    raceStatusSec=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;">
+      ${(DB.races||[]).map(r=>{
+        const rd=(t.races&&t.races[r.id])||{};
+        const isReg=!!rd.registered;
+        const isPaid=rd.payment==='paid';
+        return`<div class="pc-mp-cell"><div class="pc-mp-lbl">${r.name}</div><div style="font-size:10px;margin-bottom:2px;">${grtxt(isReg,'Registered','Not Registered')}</div><div style="font-size:10px;">${isReg?grtxt(isPaid,'Paid','Unpaid'):grtxt(false,'','N/A')}</div></div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  // --- Collect incomplete items ---
+  const driverMissing=[], throttleMissing=[], regMissing=[], crewMissing=[];
+  [['driver',t.driver_name],['throttle',t.throttle_name]].forEach(([role,nm])=>{
     if(!nm)return;
     const arr=role==='driver'?driverMissing:throttleMissing;
     if(!t[role+'_rwo'])arr.push('RWO Member');
@@ -746,11 +779,15 @@ function buildPrintHTML(t){
     if((t[role+'_rwo_pay']||'unpaid')==='unpaid')arr.push('RWO Fee');
     if((t[role+'_apba_pay']||'unpaid')==='unpaid')arr.push('APBA Fee');
   });
-  const printRaces=race?[race]:(DB.races||[]);
-  printRaces.forEach(r=>{if(t.races&&t.races[r.id]&&t.races[r.id].registered&&t.races[r.id].payment!=='paid')raceMissing.push(r.name+' Entry Fee');});
+  // Race registration missing items - check registration AND payment
+  printRaces.forEach(r=>{
+    const rd=(t.races&&t.races[r.id])||{};
+    if(!rd.registered)regMissing.push(r.name+' Registration');
+    if(rd.registered&&rd.payment!=='paid')regMissing.push(r.name+' Entry Fee');
+  });
   (t.crew||[]).forEach(c=>{if(c.paid!=='paid')crewMissing.push(c.name+' &mdash; Unpaid');});
 
-  const allComplete=!driverMissing.length&&!throttleMissing.length&&!raceMissing.length&&!crewMissing.length;
+  const allComplete=!driverMissing.length&&!throttleMissing.length&&!regMissing.length&&!crewMissing.length;
 
   function pcRole(role,lbl){
     const nm=t[role+'_name'];if(!nm)return'';
@@ -764,22 +801,21 @@ function buildPrintHTML(t){
       return`<div class="pc-chk">${pdot(t[role+'_'+k])} ${l}${extra}</div>`;
     }).join('')}</div></div>`;
   }
-  function payStatus(rid){
-    if(!t.races||!t.races[rid]||!t.races[rid].registered)return'<span class="pc-pay-status na" style="background:#f0f0f0 !important;color:#999 !important;">N/A</span>';
-    const p=t.races[rid].payment||'unpaid';
-    const colors={paid:'background:#e8f5ef !important;color:#2d8c5e !important;',unpaid:'background:#fdeaea !important;color:#c0392b !important;',partial:'background:#fef5e7 !important;color:#b7770d !important;'};
-    return`<span class="pc-pay-status ${p}" style="${colors[p]||''}">${p.charAt(0).toUpperCase()+p.slice(1)}</span>`;
-  }
   const crewSec=(t.crew&&t.crew.length)?`<div class="pc-crew-list"><div class="pc-crew-hdr">Crew Members</div>${t.crew.map(c=>`<div class="pc-crew-row"><span class="pc-crew-name">${c.name}</span><span class="pc-crew-pay ${c.paid}" style="${c.paid==='paid'?'background:#e8f5ef !important;color:#2d8c5e !important;':'background:#fdeaea !important;color:#c0392b !important;'}">${c.paid==='paid'?'Paid':'Unpaid'}</span></div>`).join('')}</div>`:'';
 
-  // Build verification section
+  // --- Verification Section ---
   let verifySec='';
   if(allComplete){
-    verifySec='<div style="background:#f0fbf5;border:1px solid #c0e8d4;border-radius:7px;padding:8px 11px;font-size:11px;color:#2d8c5e;font-weight:600;">&#10003; All requirements complete</div>';
+    verifySec='<div style="background:#f0fbf5;border:1px solid #c0e8d4;border-radius:7px;padding:8px 11px;font-size:11px;color:#2d8c5e;font-weight:600;print-color-adjust:exact;-webkit-print-color-adjust:exact;">&#10003; All requirements complete</div>';
   }else{
     const mkItems=(arr)=>arr.map(item=>`<div class="pc-verify-item"><div class="pc-verify-chkbox"></div>${item}</div>`).join('');
-    let html='<div class="pc-verify-wrapper">';
-    // Driver & Throttle columns
+    let html='<div class="pc-verify-wrapper"><div class="pc-verify-full" style="margin-bottom:8px;"><div class="pc-verify-title">On Site Verification &mdash; Items Needed</div>';
+    // Registration Status first
+    if(regMissing.length){
+      html+=`<div style="margin-top:6px;margin-bottom:6px;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#666;margin-bottom:4px;">Registration Status &mdash; Items Needed</div><div class="pc-verify-items">${mkItems(regMissing)}</div></div>`;
+    }
+    html+='</div>';
+    // Driver (left) & Throttle (right)
     if(driverMissing.length||throttleMissing.length){
       html+='<div class="pc-verify-cols">';
       if(driverMissing.length)html+=`<div class="pc-verify-box"><div class="pc-verify-title">Driver &mdash; Items Needed</div><div class="pc-verify-items">${mkItems(driverMissing)}</div></div>`;
@@ -788,13 +824,9 @@ function buildPrintHTML(t){
       else html+='<div></div>';
       html+='</div>';
     }
-    // Race registration missing
-    if(raceMissing.length){
-      html+=`<div class="pc-verify-full"><div class="pc-verify-title">Race Registration &mdash; Items Needed</div><div class="pc-verify-items">${mkItems(raceMissing)}</div></div>`;
-    }
-    // Crew missing (no title)
+    // Crew missing
     if(crewMissing.length){
-      html+=`<div class="pc-verify-crew"><div class="pc-verify-items">${mkItems(crewMissing)}</div></div>`;
+      html+=`<div class="pc-verify-crew" style="margin-top:8px;"><div class="pc-verify-title">Crew Members &mdash; Items Needed</div><div class="pc-verify-items">${mkItems(crewMissing)}</div></div>`;
     }
     html+='</div>';
     verifySec=html;
@@ -808,24 +840,24 @@ function buildPrintHTML(t){
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
         <div class="pc-boat" style="background:${bc};print-color-adjust:exact;-webkit-print-color-adjust:exact;">${t.boatnum||'?'}</div>
-        <img src="${logoSrc()}" alt="RWO" style="width:60px;height:auto;" onerror="this.style.display='none'">
+        <img src="${lg}" alt="RWO" style="width:60px;height:auto;" onerror="this.style.display='none'">
       </div>
     </div>
     <div class="pc-org-row">
       <div class="pc-org">Race World Offshore</div>
       <div class="pc-evtlbl">${evtLbl}</div>
     </div>
+    ${raceStatusSec}
     <div class="pc-mempaid">
-      <div class="pc-mp-cell"><div class="pc-mp-lbl">Driver RWO Fee</div><div class="pc-mp-val ${t.driver_rwo_pay||'unpaid'}" style="${(t.driver_rwo_pay||'unpaid')==='paid'?'color:#3db87a !important':'color:#e05252 !important'}">${(t.driver_rwo_pay||'unpaid')==='paid'?'Paid':'Unpaid'}</div></div>
-      <div class="pc-mp-cell"><div class="pc-mp-lbl">Driver APBA Fee</div><div class="pc-mp-val ${t.driver_apba_pay||'unpaid'}" style="${(t.driver_apba_pay||'unpaid')==='paid'?'color:#3db87a !important':'color:#e05252 !important'}">${(t.driver_apba_pay||'unpaid')==='paid'?'Paid':'Unpaid'}</div></div>
-      <div class="pc-mp-cell"><div class="pc-mp-lbl">Throttle RWO Fee</div><div class="pc-mp-val ${t.throttle_rwo_pay||'unpaid'}" style="${(t.throttle_rwo_pay||'unpaid')==='paid'?'color:#3db87a !important':'color:#e05252 !important'}">${(t.throttle_rwo_pay||'unpaid')==='paid'?'Paid':'Unpaid'}</div></div>
-      <div class="pc-mp-cell"><div class="pc-mp-lbl">Throttle APBA Fee</div><div class="pc-mp-val ${t.throttle_apba_pay||'unpaid'}" style="${(t.throttle_apba_pay||'unpaid')==='paid'?'color:#3db87a !important':'color:#e05252 !important'}">${(t.throttle_apba_pay||'unpaid')==='paid'?'Paid':'Unpaid'}</div></div>
+      <div class="pc-mp-cell"><div class="pc-mp-lbl">Driver RWO Fee</div><div class="pc-mp-val">${grtxt((t.driver_rwo_pay||'unpaid')==='paid','Paid','Unpaid')}</div></div>
+      <div class="pc-mp-cell"><div class="pc-mp-lbl">Driver APBA Fee</div><div class="pc-mp-val">${grtxt((t.driver_apba_pay||'unpaid')==='paid','Paid','Unpaid')}</div></div>
+      <div class="pc-mp-cell"><div class="pc-mp-lbl">Throttle RWO Fee</div><div class="pc-mp-val">${grtxt((t.throttle_rwo_pay||'unpaid')==='paid','Paid','Unpaid')}</div></div>
+      <div class="pc-mp-cell"><div class="pc-mp-lbl">Throttle APBA Fee</div><div class="pc-mp-val">${grtxt((t.throttle_apba_pay||'unpaid')==='paid','Paid','Unpaid')}</div></div>
     </div>
     <div class="pc-crew-grid">${pcRole('driver','Driver')}${pcRole('throttle','Throttleman')}${t.alt_name?pcRole('alt','Alternate'):''}</div>
     ${crewSec}
-    <div class="pc-pay"><div class="pc-pay-hdr" style="background:#111 !important;color:#fff !important;">Entry Fee &mdash; ${race?race.name:'Payment Status Per Race'}</div><div class="pc-pay-grid">${printRaces.map(r=>`<div class="pc-pay-cell"><div class="pc-pay-race">${r.name}</div>${payStatus(r.id)}</div>`).join('')}</div></div>
     ${verifySec}
-    <div class="pc-ftr"><div class="pc-ftr-note">Printed ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div><div class="pc-ftr-logo"><img src="${logoSrc()}" alt="RWO" style="height:18px;width:auto;opacity:.5;" onerror="this.outerHTML='RWO'"></div></div>`;
+    <div class="pc-ftr"><div class="pc-ftr-note">Printed ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div><div class="pc-ftr-logo"><img src="${lg}" alt="RWO" style="height:18px;width:auto;opacity:.5;" onerror="this.outerHTML='RWO'"></div></div>`;
 }
 
 function doPrint(id){
