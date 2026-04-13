@@ -32,7 +32,16 @@
       "alt_apbamem": false,
       "alt_medical": false,
       "alt_dunker": false,
-      "crew": [],
+      "crew": [
+        {
+          "name": "Bobby",
+          "paid": "paid"
+        },
+        {
+          "name": "Michelle",
+          "paid": "unpaid"
+        }
+      ],
       "races": {
         "atlanticcity": {
           "registered": true,
@@ -51,7 +60,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T17:37:22.756Z",
+      "updated": "2026-04-13T17:37:33.548Z",
       "id": "team_1776092503277"
     }
   ],
