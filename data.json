@@ -1,5 +1,60 @@
 {
-  "teams": [],
+  "teams": [
+    {
+      "teamname": "Saris Racing",
+      "boatnum": "441",
+      "boat_color": "#111111",
+      "class": "Bracket Class 4",
+      "notes": "",
+      "driver_name": "",
+      "driver_apba": "",
+      "driver_rwo": false,
+      "driver_apbamem": false,
+      "driver_medical": false,
+      "driver_dunker": false,
+      "driver_medical_date": "",
+      "driver_dunker_date": "",
+      "driver_rwo_pay": "unpaid",
+      "driver_apba_pay": "unpaid",
+      "throttle_name": "",
+      "throttle_apba": "",
+      "throttle_rwo": false,
+      "throttle_apbamem": false,
+      "throttle_medical": false,
+      "throttle_dunker": false,
+      "throttle_medical_date": "",
+      "throttle_dunker_date": "",
+      "throttle_rwo_pay": "unpaid",
+      "throttle_apba_pay": "unpaid",
+      "alt_name": "Laverne French",
+      "alt_apba": "",
+      "alt_rwo": true,
+      "alt_apbamem": false,
+      "alt_medical": false,
+      "alt_dunker": false,
+      "crew": [],
+      "races": {
+        "atlanticcity": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "michigancity": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "clearwater": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "keywest": {
+          "registered": false,
+          "payment": "unpaid"
+        }
+      },
+      "updated": "2026-04-13T18:58:46.461Z",
+      "id": "team_1776106726461"
+    }
+  ],
   "races": [
     {
       "id": "atlanticcity",
