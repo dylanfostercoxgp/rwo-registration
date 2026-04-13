@@ -313,6 +313,7 @@ button,input,select{font-family:inherit;}
       <div class="save-status"><div class="sdot" id="sdot"></div><span id="slbl">Saved</span></div>
       <button class="btn btn-ol" onclick="manualSave()" title="Save now">&#128190; Save</button>
       <button class="theme-btn" onclick="toggleTheme()" id="theme-icon">&#127769;</button>
+      <button class="btn btn-ol" onclick="if(confirm('Reset GitHub token?')){resetToken();}" title="Reset GitHub token">&#128273;</button>
       <button class="btn btn-ol" onclick="doLogout()">Lock</button>
       <button class="btn btn-ac" onclick="openAdd()">+ Add Team</button>
     </div>
@@ -457,7 +458,6 @@ button,input,select{font-family:inherit;}
 <script>
 const GH_OWNER='dylanfostercoxgp';
 const GH_REPO='rwo-registration';
-const GH_TOKEN='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';
 const APP_PW='rwo2026';
 const DB_FILE='data.json';
 const CLASSES=['Super Cat','Super Stock','Class 1','Factory Stock','Super Vee','Modified V','Bracket Class 2','Bracket Class 3','Bracket Class 4','Bracket Class 5','Bracket Class 6','Bracket Class 7','Cat 300','Extreme'];
@@ -467,8 +467,18 @@ const DEFAULT_RACES=[
   {id:'clearwater',name:'Clearwater',date:'Sep 26-28, 2026'},
   {id:'keywest',name:'Key West',date:'Nov 1-8, 2026'}
 ];
-let DB={teams:[],races:[],season:'2026'};
+let DB={teams:[],races:DEFAULT_RACES,season:'2026'};
 let editId=null,curRace='all',saveTimer=null,crewCt=0;
+
+// Token stored in localStorage, never in source code (prevents GitHub from revoking it)
+function getToken(){return localStorage.getItem('rwo_gh_token')||'';}
+function setToken(t){localStorage.setItem('rwo_gh_token',t);}
+function promptToken(){
+  const t=prompt('Enter GitHub Personal Access Token:\n\n(This is stored on this device only. You only need to do this once per device.)');
+  if(t&&t.trim()){setToken(t.trim());return true;}
+  return false;
+}
+function resetToken(){localStorage.removeItem('rwo_gh_token');toast('Token cleared. Reload to re-enter.','a');}
 
 function checkPw(){
   const v=document.getElementById('pw-input').value;
@@ -491,32 +501,47 @@ function toggleTheme(){
   document.getElementById('theme-icon').innerHTML=t==='dark'?'&#127769;':'&#9728;';
 }
 async function ghGet(p){
-  const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${p}`,{headers:{Authorization:`token ${GH_TOKEN}`,Accept:'application/vnd.github.v3+json'}});
-  if(r.status===404)return null;if(!r.ok)throw new Error('GET '+r.status);return r.json();
+  const tok=getToken();
+  const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${p}`,{headers:{Authorization:`token ${tok}`,Accept:'application/vnd.github.v3+json'}});
+  if(r.status===404)return null;
+  if(r.status===401){toast('Token invalid. Click the key icon to re-enter.','r');throw new Error('GET 401 - bad token');}
+  if(!r.ok)throw new Error('GET '+r.status);return r.json();
 }
 async function ghPut(p,content,sha){
+  const tok=getToken();
   const enc=btoa(unescape(encodeURIComponent(JSON.stringify(content,null,2))));
   const body={message:'RWO update',content:enc,...(sha&&{sha})};
-  const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${p}`,{method:'PUT',headers:{Authorization:`token ${GH_TOKEN}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  const r=await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${p}`,{method:'PUT',headers:{Authorization:`token ${tok}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(r.status===401){toast('Token invalid. Click the key icon to re-enter.','r');throw new Error('PUT 401 - bad token');}
   if(!r.ok)throw new Error('PUT '+r.status);return r.json();
 }
 async function loadData(){
+  // Always ensure races are set regardless of what happens
+  DB.races=DEFAULT_RACES;
+  if(!getToken()){
+    if(!promptToken()){toast('No token entered. Data cannot load.','r');return;}
+  }
   setSave('saving');
   try{
     const f=await ghGet(DB_FILE);
-    if(f){DB=JSON.parse(decodeURIComponent(escape(atob(f.content.replace(/\n/g,'')))));DB._sha=f.sha;}
-    else{DB={teams:[],races:DEFAULT_RACES,season:'2026'};await saveData();}
-    // Always use the races defined in code as the source of truth
-    DB.races=DEFAULT_RACES;
+    if(f){
+      const loaded=JSON.parse(decodeURIComponent(escape(atob(f.content.replace(/\n/g,'')))));
+      loaded._sha=f.sha;
+      loaded.races=DEFAULT_RACES; // always override with code-defined races
+      DB=loaded;
+    }else{
+      DB={teams:[],races:DEFAULT_RACES,season:'2026'};
+      await saveData();
+    }
     setSave('saved');
-    // Persist updated races to GitHub so all devices see them
-    queueSave();
-  }catch(e){setSave('error');toast('Load error: '+e.message,'r');}
+  }catch(e){
+    setSave('error');toast('Load error: '+e.message,'r');
+    // DB.races is still DEFAULT_RACES from the top of this function, so the form still works
+  }
 }
 async function saveData(){
   setSave('saving');
   try{
-    // Always fetch latest SHA before saving to avoid conflicts
     const latest=await ghGet(DB_FILE);
     const sha=latest?latest.sha:DB._sha;
     const copy=JSON.parse(JSON.stringify(DB));delete copy._sha;
