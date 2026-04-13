@@ -309,7 +309,7 @@
       "boat_color": "#111111",
       "class": "",
       "notes": "",
-      "driver_name": "",
+      "driver_name": "Driver",
       "driver_apba": "",
       "driver_rwo": false,
       "driver_apbamem": false,
@@ -319,7 +319,7 @@
       "driver_dunker_date": "",
       "driver_rwo_pay": "unpaid",
       "driver_apba_pay": "unpaid",
-      "throttle_name": "",
+      "throttle_name": "Throttleman",
       "throttle_apba": "",
       "throttle_rwo": false,
       "throttle_apbamem": false,
@@ -366,7 +366,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T19:53:36.457Z",
+      "updated": "2026-04-13T19:56:23.518Z",
       "id": "team_1776110016457"
     },
     {
