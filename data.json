@@ -368,6 +368,72 @@
       },
       "updated": "2026-04-13T19:53:36.457Z",
       "id": "team_1776110016457"
+    },
+    {
+      "teamname": "One3 boats",
+      "boatnum": "S-13",
+      "boat_color": "#111111",
+      "class": "Super Stock",
+      "notes": "",
+      "driver_name": "",
+      "driver_apba": "",
+      "driver_rwo": false,
+      "driver_apbamem": false,
+      "driver_medical": false,
+      "driver_dunker": false,
+      "driver_medical_date": "",
+      "driver_dunker_date": "",
+      "driver_rwo_pay": "unpaid",
+      "driver_apba_pay": "unpaid",
+      "throttle_name": "",
+      "throttle_apba": "",
+      "throttle_rwo": false,
+      "throttle_apbamem": false,
+      "throttle_medical": false,
+      "throttle_dunker": false,
+      "throttle_medical_date": "",
+      "throttle_dunker_date": "",
+      "throttle_rwo_pay": "unpaid",
+      "throttle_apba_pay": "unpaid",
+      "alt_name": "",
+      "alt_apba": "",
+      "alt_rwo": false,
+      "alt_apbamem": false,
+      "alt_medical": false,
+      "alt_dunker": false,
+      "alt_medical_date": "",
+      "alt_dunker_date": "",
+      "alt_rwo_pay": "unpaid",
+      "alt_apba_pay": "unpaid",
+      "kw_location": false,
+      "kw_duval": false,
+      "kw_duval_pay": "unpaid",
+      "crew": [
+        {
+          "name": "Brendan Stamps",
+          "paid": "paid"
+        }
+      ],
+      "races": {
+        "atlanticcity": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "michigancity": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "clearwater": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "keywest": {
+          "registered": false,
+          "payment": "unpaid"
+        }
+      },
+      "updated": "2026-04-13T19:56:08.975Z",
+      "id": "team_1776110168975"
     }
   ],
   "races": [
