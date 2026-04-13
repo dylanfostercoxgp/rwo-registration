@@ -241,7 +241,7 @@
       "teamname": "Bad Attitude Racing",
       "boatnum": "688",
       "boat_color": "#111111",
-      "class": "",
+      "class": "Bracket Class 6",
       "notes": "",
       "driver_name": "Driver",
       "driver_apba": "",
@@ -295,7 +295,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T19:52:18.312Z",
+      "updated": "2026-04-13T19:52:27.082Z",
       "id": "team_1776109938312"
     }
   ],
