@@ -263,7 +263,7 @@
       "throttle_dunker_date": "",
       "throttle_rwo_pay": "unpaid",
       "throttle_apba_pay": "unpaid",
-      "alt_name": "DJ Farr",
+      "alt_name": "",
       "alt_apba": "",
       "alt_rwo": false,
       "alt_apbamem": false,
@@ -271,12 +271,17 @@
       "alt_dunker": false,
       "alt_medical_date": "",
       "alt_dunker_date": "",
-      "alt_rwo_pay": "paid",
+      "alt_rwo_pay": "unpaid",
       "alt_apba_pay": "unpaid",
       "kw_location": false,
       "kw_duval": false,
       "kw_duval_pay": "unpaid",
-      "crew": [],
+      "crew": [
+        {
+          "name": "DJ Farr",
+          "paid": "paid"
+        }
+      ],
       "races": {
         "atlanticcity": {
           "registered": false,
@@ -295,7 +300,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T19:52:27.082Z",
+      "updated": "2026-04-13T19:55:33.968Z",
       "id": "team_1776109938312"
     },
     {
