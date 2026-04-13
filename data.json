@@ -52,15 +52,15 @@
       ],
       "races": {
         "atlanticcity": {
-          "registered": false,
-          "payment": "unpaid"
+          "registered": true,
+          "payment": "paid"
         },
         "michigancity": {
-          "registered": false,
-          "payment": "unpaid"
+          "registered": true,
+          "payment": "paid"
         },
         "clearwater": {
-          "registered": false,
+          "registered": true,
           "payment": "paid"
         },
         "keywest": {
@@ -68,7 +68,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T17:10:02.980Z",
+      "updated": "2026-04-13T17:10:34.655Z",
       "id": "team_1776092503277"
     }
   ],
