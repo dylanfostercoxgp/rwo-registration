@@ -1,0 +1,26 @@
+{
+  "teams": [],
+  "races": [
+    {
+      "id": "clearwater",
+      "name": "Clearwater",
+      "date": "Sep 26-28, 2025"
+    },
+    {
+      "id": "miami",
+      "name": "Miami",
+      "date": "Nov 7-9, 2025"
+    },
+    {
+      "id": "bimini",
+      "name": "Bimini",
+      "date": "Jan 15-17, 2026"
+    },
+    {
+      "id": "nassau",
+      "name": "Nassau",
+      "date": "Mar 4-6, 2026"
+    }
+  ],
+  "season": "2025"
+}
