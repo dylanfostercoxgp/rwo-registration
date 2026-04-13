@@ -57,6 +57,69 @@
       },
       "updated": "2026-04-13T19:10:53.878Z",
       "id": "team_1776106726461"
+    },
+    {
+      "teamname": "Twisted Throttles",
+      "boatnum": "621",
+      "boat_color": "#111111",
+      "class": "Bracket Class 6",
+      "notes": "",
+      "driver_name": "Driver",
+      "driver_apba": "",
+      "driver_rwo": false,
+      "driver_apbamem": false,
+      "driver_medical": false,
+      "driver_dunker": false,
+      "driver_medical_date": "",
+      "driver_dunker_date": "",
+      "driver_rwo_pay": "unpaid",
+      "driver_apba_pay": "unpaid",
+      "throttle_name": "Thorttleman",
+      "throttle_apba": "",
+      "throttle_rwo": false,
+      "throttle_apbamem": false,
+      "throttle_medical": false,
+      "throttle_dunker": false,
+      "throttle_medical_date": "",
+      "throttle_dunker_date": "",
+      "throttle_rwo_pay": "unpaid",
+      "throttle_apba_pay": "unpaid",
+      "alt_name": "",
+      "alt_apba": "",
+      "alt_rwo": false,
+      "alt_apbamem": false,
+      "alt_medical": false,
+      "alt_dunker": false,
+      "alt_medical_date": "",
+      "alt_dunker_date": "",
+      "alt_rwo_pay": "unpaid",
+      "alt_apba_pay": "unpaid",
+      "crew": [
+        {
+          "name": "Kevin Campbell",
+          "paid": "paid"
+        }
+      ],
+      "races": {
+        "atlanticcity": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "michigancity": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "clearwater": {
+          "registered": false,
+          "payment": "unpaid"
+        },
+        "keywest": {
+          "registered": false,
+          "payment": "unpaid"
+        }
+      },
+      "updated": "2026-04-13T19:12:14.675Z",
+      "id": "team_1776107534675"
     }
   ],
   "races": [
