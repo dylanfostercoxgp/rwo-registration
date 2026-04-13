@@ -5,7 +5,7 @@
       "boatnum": "3",
       "boat_color": "#ff7300",
       "class": "Super Cat",
-      "notes": "Test",
+      "notes": "TESTING NOTES",
       "driver_name": "Brit Lilly",
       "driver_apba": "13453",
       "driver_rwo": false,
@@ -60,7 +60,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T17:51:40.945Z",
+      "updated": "2026-04-13T17:53:44.398Z",
       "id": "team_1776092503277"
     }
   ],
