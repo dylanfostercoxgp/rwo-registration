@@ -73,7 +73,7 @@
       "boat_color": "#111111",
       "class": "Class 1",
       "notes": "",
-      "driver_name": "",
+      "driver_name": "Driver",
       "driver_apba": "",
       "driver_rwo": false,
       "driver_apbamem": false,
@@ -123,7 +123,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T18:41:11.548Z",
+      "updated": "2026-04-13T18:41:26.662Z",
       "id": "team_1776105671548"
     }
   ],
