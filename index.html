@@ -453,7 +453,7 @@ button,input,select{font-family:inherit;}
 <div class="toast" id="toast"><div class="tdot" id="tdot"></div><span id="tmsg"></span></div>
 
 <!-- Hidden container for PDF generation -->
-<div id="pdf-render" style="position:fixed;left:-9999px;top:0;width:580px;font-family:'DM Sans',sans-serif;"></div>
+<div id="pdf-render" style="position:fixed;left:-9999px;top:0;width:720px;font-family:'DM Sans',sans-serif;"></div>
 
 <script>
 const GH_OWNER='dylanfostercoxgp';
@@ -546,6 +546,7 @@ async function loadData(){
       const loaded=JSON.parse(decodeURIComponent(escape(atob(f.content.replace(/\n/g,'')))));
       loaded._sha=f.sha;
       loaded.races=DEFAULT_RACES; // always override with code-defined races
+      loaded.season='2026'; // always force current season
       DB=loaded;
     }else{
       DB={teams:[],races:DEFAULT_RACES,season:'2026'};
@@ -887,13 +888,13 @@ async function downloadAllPDFs(){
   toast(`Generating PDFs (0/${sorted.length})...`,'a');
   for(let i=0;i<sorted.length;i++){
     const t=sorted[i];
-    container.innerHTML=`<div class="print-box" style="width:580px;background:#fff;font-family:'DM Sans',sans-serif;"><div class="pc">${buildPrintHTML(t)}</div></div>`;
+    container.innerHTML=`<div class="print-box" style="width:720px;max-width:720px;background:#fff;font-family:'DM Sans',sans-serif;"><div class="pc">${buildPrintHTML(t)}</div></div>`;
     const el=container.firstElementChild;
     const fname=`${(t.boatnum||'00').toString().padStart(3,'0')}_${(t.teamname||'Team').replace(/[^a-zA-Z0-9]/g,'_')}.pdf`;
     try{
       await html2pdf().set({
-        margin:8,filename:fname,image:{type:'jpeg',quality:0.95},
-        html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},
+        margin:[5,3,5,3],filename:fname,image:{type:'jpeg',quality:0.98},
+        html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff',width:720},
         jsPDF:{unit:'mm',format:'letter',orientation:'portrait'}
       }).from(el).save();
     }catch(e){console.error('PDF error for '+t.teamname,e);}
