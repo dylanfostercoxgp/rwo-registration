@@ -734,37 +734,45 @@ function saveTeam(){
 }
 function delTeam(id){if(!confirm('Delete this team?'))return;DB.teams=DB.teams.filter(t=>t.id!==id);renderAll();toast('Team deleted','r');queueSave();}
 
+// Class color map for print card badges
+const CLASS_COLORS={'Super Cat':'#1a237e','Super Stock':'#b71c1c','Class 1':'#004d40','Factory Stock':'#e65100','Super Vee':'#4a148c','Modified V':'#0d47a1','Bracket Class 2':'#1b5e20','Bracket Class 3':'#827717','Bracket Class 4':'#bf360c','Bracket Class 5':'#4e342e','Bracket Class 6':'#37474f','Bracket Class 7':'#880e4f','Cat 300':'#006064','Extreme':'#d50000'};
+function classColor(cls){return CLASS_COLORS[cls]||'#333333';}
+
 function buildPrintHTML(t){
   const race=curRace!=='all'?(DB.races||[]).find(r=>r.id===curRace):null;
   const evtLbl=race?race.name+' &mdash; '+race.date:'All Events &mdash; '+(DB.season||'2026')+' Season';
   const bc=t.boat_color||'#111111';
   const lg=logoSrc();
+  const cc=classColor(t.class);
   function pdot(val){return val?'<div class="pc-dot ok" style="background:#3db87a !important;print-color-adjust:exact;-webkit-print-color-adjust:exact;"></div>':'<div class="pc-dot no" style="background:#e05252 !important;print-color-adjust:exact;-webkit-print-color-adjust:exact;"></div>';}
   function grtxt(v,y,n){return v?`<span style="color:#2d8c5e !important;font-weight:700;print-color-adjust:exact;-webkit-print-color-adjust:exact;">${y}</span>`:`<span style="color:#c0392b !important;font-weight:700;print-color-adjust:exact;-webkit-print-color-adjust:exact;">${n}</span>`;}
 
   const printRaces=race?[race]:(DB.races||[]);
 
-  // --- Race Status Section (above driver/throttle fees) ---
-  let raceStatusSec='';
+  // --- Entry Status Section (above driver/throttle fees) ---
+  let entryStatusSec='';
   if(race){
-    // Single race tab: show 2 side-by-side boxes for this race
     const rd=(t.races&&t.races[race.id])||{};
     const isReg=!!rd.registered;
     const isPaid=rd.payment==='paid';
-    raceStatusSec=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
-      <div class="pc-mp-cell"><div class="pc-mp-lbl">${race.name} Status</div><div class="pc-mp-val">${grtxt(isReg,'Registered','Not Registered')}</div></div>
-      <div class="pc-mp-cell"><div class="pc-mp-lbl">${race.name} Entry Fee</div><div class="pc-mp-val">${isReg?grtxt(isPaid,'Paid','Unpaid'):grtxt(false,'','N/A')}</div></div>
-    </div>`;
+    entryStatusSec=`<div style="border:1px solid #e0e0e0;border-radius:7px;overflow:hidden;margin-bottom:10px;">
+      <div style="background:#111 !important;color:#fff !important;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:5px 11px;print-color-adjust:exact;-webkit-print-color-adjust:exact;">Entry Status &mdash; ${race.name}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+        <div class="pc-mp-cell" style="border-right:1px solid #e0e0e0;border-radius:0;"><div class="pc-mp-lbl">Registration</div><div class="pc-mp-val">${grtxt(isReg,'Registered','Not Registered')}</div></div>
+        <div class="pc-mp-cell" style="border-radius:0;"><div class="pc-mp-lbl">Entry Fee</div><div class="pc-mp-val">${isReg?grtxt(isPaid,'Paid','Unpaid'):grtxt(false,'','N/A')}</div></div>
+      </div></div>`;
   }else{
-    // All races tab: show 4 races with reg + paid
-    raceStatusSec=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;">
-      ${(DB.races||[]).map(r=>{
+    entryStatusSec=`<div style="border:1px solid #e0e0e0;border-radius:7px;overflow:hidden;margin-bottom:10px;">
+      <div style="background:#111 !important;color:#fff !important;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:5px 11px;print-color-adjust:exact;-webkit-print-color-adjust:exact;">Entry Status &mdash; All Races</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;">
+      ${(DB.races||[]).map((r,i)=>{
         const rd=(t.races&&t.races[r.id])||{};
         const isReg=!!rd.registered;
         const isPaid=rd.payment==='paid';
-        return`<div class="pc-mp-cell"><div class="pc-mp-lbl">${r.name}</div><div style="font-size:10px;margin-bottom:2px;">${grtxt(isReg,'Registered','Not Registered')}</div><div style="font-size:10px;">${isReg?grtxt(isPaid,'Paid','Unpaid'):grtxt(false,'','N/A')}</div></div>`;
+        const bdr=i<3?'border-right:1px solid #e0e0e0;':'';
+        return`<div class="pc-mp-cell" style="${bdr}border-radius:0;"><div class="pc-mp-lbl">${r.name}</div><div style="font-size:10px;margin-bottom:2px;">${grtxt(isReg,'Registered','Not Registered')}</div><div style="font-size:10px;">${isReg?grtxt(isPaid,'Paid','Unpaid'):grtxt(false,'','N/A')}</div></div>`;
       }).join('')}
-    </div>`;
+      </div></div>`;
   }
 
   // --- Collect incomplete items ---
@@ -779,7 +787,6 @@ function buildPrintHTML(t){
     if((t[role+'_rwo_pay']||'unpaid')==='unpaid')arr.push('RWO Fee');
     if((t[role+'_apba_pay']||'unpaid')==='unpaid')arr.push('APBA Fee');
   });
-  // Race registration missing items - check registration AND payment
   printRaces.forEach(r=>{
     const rd=(t.races&&t.races[r.id])||{};
     if(!rd.registered)regMissing.push(r.name+' Registration');
@@ -810,12 +817,10 @@ function buildPrintHTML(t){
   }else{
     const mkItems=(arr)=>arr.map(item=>`<div class="pc-verify-item"><div class="pc-verify-chkbox"></div>${item}</div>`).join('');
     let html='<div class="pc-verify-wrapper"><div class="pc-verify-full" style="margin-bottom:8px;"><div class="pc-verify-title">On Site Verification &mdash; Items Needed</div>';
-    // Registration Status first
     if(regMissing.length){
       html+=`<div style="margin-top:6px;margin-bottom:6px;"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#666;margin-bottom:4px;">Registration Status &mdash; Items Needed</div><div class="pc-verify-items">${mkItems(regMissing)}</div></div>`;
     }
     html+='</div>';
-    // Driver (left) & Throttle (right)
     if(driverMissing.length||throttleMissing.length){
       html+='<div class="pc-verify-cols">';
       if(driverMissing.length)html+=`<div class="pc-verify-box"><div class="pc-verify-title">Driver &mdash; Items Needed</div><div class="pc-verify-items">${mkItems(driverMissing)}</div></div>`;
@@ -824,7 +829,6 @@ function buildPrintHTML(t){
       else html+='<div></div>';
       html+='</div>';
     }
-    // Crew missing
     if(crewMissing.length){
       html+=`<div class="pc-verify-crew" style="margin-top:8px;"><div class="pc-verify-title">Crew Members &mdash; Items Needed</div><div class="pc-verify-items">${mkItems(crewMissing)}</div></div>`;
     }
@@ -835,19 +839,21 @@ function buildPrintHTML(t){
   return`
     <div class="pc-hdr">
       <div class="pc-hdr-left">
-        <div class="pc-tname-main">${t.teamname}</div>
-        ${t.class?`<div class="pc-cls-main">${t.class}</div>`:''}
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div class="pc-tname-main">${t.teamname}</div>
+          ${t.class?`<div class="pc-cls-main" style="background:${cc} !important;print-color-adjust:exact;-webkit-print-color-adjust:exact;">${t.class}</div>`:''}
+        </div>
+        <img src="${lg}" alt="RWO" style="height:28px;width:auto;margin-top:4px;" onerror="this.style.display='none'">
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
         <div class="pc-boat" style="background:${bc};print-color-adjust:exact;-webkit-print-color-adjust:exact;">${t.boatnum||'?'}</div>
-        <img src="${lg}" alt="RWO" style="width:60px;height:auto;" onerror="this.style.display='none'">
       </div>
     </div>
     <div class="pc-org-row">
       <div class="pc-org">Race World Offshore</div>
       <div class="pc-evtlbl">${evtLbl}</div>
     </div>
-    ${raceStatusSec}
+    ${entryStatusSec}
     <div class="pc-mempaid">
       <div class="pc-mp-cell"><div class="pc-mp-lbl">Driver RWO Fee</div><div class="pc-mp-val">${grtxt((t.driver_rwo_pay||'unpaid')==='paid','Paid','Unpaid')}</div></div>
       <div class="pc-mp-cell"><div class="pc-mp-lbl">Driver APBA Fee</div><div class="pc-mp-val">${grtxt((t.driver_apba_pay||'unpaid')==='paid','Paid','Unpaid')}</div></div>
