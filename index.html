@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --accent:#c0222c;--accent-dim:#8a0008;
@@ -329,6 +330,11 @@ button,input,select{font-family:inherit;}
         <option value="complete">Docs complete</option>
       </select>
       <button class="btn btn-ol" onclick="downloadAllPDFs()" title="Download all visible teams as individual PDFs">&#128196; Download All PDFs</button>
+      <select class="fsel" id="export-sel" onchange="doExport(this.value);this.value='';" style="font-weight:600;">
+        <option value="">&#128229; Export All...</option>
+        <option value="csv">Export CSV</option>
+        <option value="xlsx">Export XLSX</option>
+      </select>
       <button class="btn btn-ol" onclick="toggleCutoffs()" title="Set credential cutoff dates">&#9881; Cutoff Dates</button>
     </div>
     <div id="cutoff-panel" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:1rem;">
@@ -801,7 +807,7 @@ function buildPrintHTML(t){
       <div style="background:#111 !important;color:#fff !important;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:5px 11px;print-color-adjust:exact;-webkit-print-color-adjust:exact;">Entry Status &mdash; ${race.name}</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
         <div class="pc-mp-cell" style="border-right:1px solid #e0e0e0;border-radius:0;"><div class="pc-mp-lbl">Registration</div><div class="pc-mp-val">${grtxt(isReg,'Registered','Not Registered')}</div></div>
-        <div class="pc-mp-cell" style="border-radius:0;"><div class="pc-mp-lbl">Entry Fee</div><div class="pc-mp-val">${isReg?grtxt(isPaid,'Paid','Unpaid'):grtxt(false,'','N/A')}</div></div>
+        <div class="pc-mp-cell" style="border-radius:0;"><div class="pc-mp-lbl">Entry Fee</div><div class="pc-mp-val">${grtxt(isPaid,'Paid','Unpaid')}</div></div>
       </div></div>`;
   }else{
     entryStatusSec=`<div style="border:1px solid #e0e0e0;border-radius:7px;overflow:hidden;margin-bottom:10px;">
@@ -812,7 +818,7 @@ function buildPrintHTML(t){
         const isReg=!!rd.registered;
         const isPaid=rd.payment==='paid';
         const bdr=i<3?'border-right:1px solid #e0e0e0;':'';
-        return`<div class="pc-mp-cell" style="${bdr}border-radius:0;"><div class="pc-mp-lbl">${r.name}</div><div style="font-size:10px;margin-bottom:2px;">${grtxt(isReg,'Registered','Not Registered')}</div><div style="font-size:10px;">${isReg?grtxt(isPaid,'Paid','Unpaid'):grtxt(false,'','N/A')}</div></div>`;
+        return`<div class="pc-mp-cell" style="${bdr}border-radius:0;"><div class="pc-mp-lbl">${r.name}</div><div style="font-size:10px;margin-bottom:2px;">${grtxt(isReg,'Registered','Not Registered')}</div><div style="font-size:10px;">${grtxt(isPaid,'Paid','Unpaid')}</div></div>`;
       }).join('')}
       </div></div>`;
   }
@@ -832,7 +838,7 @@ function buildPrintHTML(t){
   printRaces.forEach(r=>{
     const rd=(t.races&&t.races[r.id])||{};
     if(!rd.registered)regMissing.push(r.name+' Registration');
-    if(rd.registered&&rd.payment!=='paid')regMissing.push(r.name+' Entry Fee');
+    if(rd.payment!=='paid')regMissing.push(r.name+' Entry Fee');
   });
   (t.crew||[]).forEach(c=>{if(c.paid!=='paid')crewMissing.push(c.name+' &mdash; Unpaid');});
 
@@ -948,6 +954,55 @@ async function downloadAllPDFs(){
   }
   container.innerHTML='';
   toast(`${sorted.length} PDFs downloaded!`,'g');
+}
+
+function buildExportRows(){
+  const teams=getFilteredTeams();
+  const races=DB.races||[];
+  return teams.map(t=>{
+    const row={
+      'Team Name':t.teamname||'','Boat #':t.boatnum||'','Class':t.class||'','Notes':t.notes||'',
+      'Driver Name':t.driver_name||'','Driver APBA #':t.driver_apba||'',
+      'Driver RWO Member':t.driver_rwo?'Yes':'No','Driver APBA Member':t.driver_apbamem?'Yes':'No',
+      'Driver Medical':t.driver_medical?'Yes':'No','Driver Medical Date':t.driver_medical_date||'',
+      'Driver Dunker':t.driver_dunker?'Yes':'No','Driver Dunker Date':t.driver_dunker_date||'',
+      'Driver RWO Fee':t.driver_rwo_pay||'unpaid','Driver APBA Fee':t.driver_apba_pay||'unpaid',
+      'Throttleman Name':t.throttle_name||'','Throttleman APBA #':t.throttle_apba||'',
+      'Throttleman RWO Member':t.throttle_rwo?'Yes':'No','Throttleman APBA Member':t.throttle_apbamem?'Yes':'No',
+      'Throttleman Medical':t.throttle_medical?'Yes':'No','Throttleman Medical Date':t.throttle_medical_date||'',
+      'Throttleman Dunker':t.throttle_dunker?'Yes':'No','Throttleman Dunker Date':t.throttle_dunker_date||'',
+      'Throttleman RWO Fee':t.throttle_rwo_pay||'unpaid','Throttleman APBA Fee':t.throttle_apba_pay||'unpaid',
+      'Alt Name':t.alt_name||'','Alt APBA #':t.alt_apba||'',
+      'Alt RWO Member':t.alt_rwo?'Yes':'No','Alt APBA Member':t.alt_apbamem?'Yes':'No',
+      'Alt Medical':t.alt_medical?'Yes':'No','Alt Medical Date':t.alt_medical_date||'',
+      'Alt Dunker':t.alt_dunker?'Yes':'No','Alt Dunker Date':t.alt_dunker_date||'',
+      'Alt RWO Fee':t.alt_rwo_pay||'unpaid','Alt APBA Fee':t.alt_apba_pay||'unpaid',
+      'Crew Members':(t.crew||[]).map(c=>c.name+(c.paid==='paid'?' (Paid)':' (Unpaid)')).join('; ')
+    };
+    races.forEach(r=>{
+      const rd=(t.races&&t.races[r.id])||{};
+      row[r.name+' Registered']=rd.registered?'Yes':'No';
+      row[r.name+' Payment']=rd.payment||'unpaid';
+    });
+    return row;
+  });
+}
+function doExport(fmt){
+  if(!fmt)return;
+  const rows=buildExportRows();
+  if(!rows.length){toast('No teams to export','r');return;}
+  if(fmt==='csv'){
+    const headers=Object.keys(rows[0]);
+    const csv=[headers.join(','),...rows.map(r=>headers.map(h=>`"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','))].join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rwo_teams_export.csv';a.click();
+    toast('CSV exported!','g');
+  }else if(fmt==='xlsx'){
+    const ws=XLSX.utils.json_to_sheet(rows);
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Teams');
+    XLSX.writeFile(wb,'rwo_teams_export.xlsx');
+    toast('XLSX exported!','g');
+  }
 }
 
 let toastTmr;
