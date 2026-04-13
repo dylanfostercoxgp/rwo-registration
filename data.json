@@ -12,7 +12,7 @@
       "driver_apbamem": false,
       "driver_medical": false,
       "driver_dunker": false,
-      "driver_medical_date": "",
+      "driver_medical_date": "2026-08-19",
       "driver_dunker_date": "",
       "driver_rwo_pay": "unpaid",
       "driver_apba_pay": "unpaid",
@@ -51,7 +51,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T18:59:00.704Z",
+      "updated": "2026-04-13T19:02:36.057Z",
       "id": "team_1776106726461"
     }
   ],
