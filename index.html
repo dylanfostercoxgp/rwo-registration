@@ -649,22 +649,21 @@ function racesBadge(t){
   return`<span class="pill p-ac">${reg.map(r=>r.name).join(', ')}</span>`;
 }
 function fmtDate(d){if(!d)return'';try{const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return d;}}
-function feesPills(t,role){
-  const rwo=t[role+'_rwo_pay']||'unpaid';
-  const apba=t[role+'_apba_pay']||'unpaid';
-  return`<div class="check-item"><div class="cdot ${rwo==='paid'?'ok':'no'}"></div>RWO Fee</div><div class="check-item"><div class="cdot ${apba==='paid'?'ok':'no'}"></div>APBA Fee</div>`;
-}
 function roleHTML(t,role,lbl){
   const nm=t[role+'_name'];if(!nm)return'';
-  const keys=[['rwo','RWO Member'],['apbamem','APBA Member'],['medical','Medical Cert'],['dunker','Dunker Test']];
+  const rwo=t[role+'_rwo_pay']||'unpaid';
+  const apba=t[role+'_apba_pay']||'unpaid';
   const medDate=t[role+'_medical_date']?`<span class="date-hint">${fmtDate(t[role+'_medical_date'])}</span>`:'';
   const dunkDate=t[role+'_dunker_date']?`<span class="date-hint">${fmtDate(t[role+'_dunker_date'])}</span>`:'';
-  return`<div class="role-col"><div class="role-heading">${lbl}</div><div class="person-name-t">${nm}</div><div class="apba-num">${t[role+'_apba']?'APBA #'+t[role+'_apba']:'&mdash;'}</div><div class="checklist">${keys.map(([k,l])=>{
-    let extra='';
-    if(k==='medical')extra=medDate;
-    if(k==='dunker')extra=dunkDate;
-    return`<div class="check-item"><div class="cdot ${credCheck(t,role,k)?'ok':'no'}"></div>${l}${extra}</div>`;
-  }).join('')}${feesPills(t,role)}</div></div>`;
+  const items=[
+    {dot:credCheck(t,role,'rwo'),label:'RWO Member'},
+    {dot:rwo==='paid',label:'RWO Fee'},
+    {dot:credCheck(t,role,'apbamem'),label:'APBA Member'},
+    {dot:apba==='paid',label:'APBA Fee'},
+    {dot:credCheck(t,role,'medical'),label:'Medical Cert',extra:medDate},
+    {dot:credCheck(t,role,'dunker'),label:'Dunker Test',extra:dunkDate}
+  ];
+  return`<div class="role-col"><div class="role-heading">${lbl}</div><div class="person-name-t">${nm}</div><div class="apba-num">${t[role+'_apba']?'APBA #'+t[role+'_apba']:'&mdash;'}</div><div class="checklist">${items.map(it=>`<div class="check-item"><div class="cdot ${it.dot?'ok':'no'}"></div>${it.label}${it.extra||''}</div>`).join('')}</div></div>`;
 }
 function crewHTML(t){
   const crew=t.crew||[];if(!crew.length)return'';
@@ -770,8 +769,6 @@ function openEdit(id){
   document.getElementById('f-am').checked=!!t.alt_medical;document.getElementById('f-ad').checked=!!t.alt_dunker;
   document.getElementById('f-amd').value=t.alt_medical_date||'';document.getElementById('f-add').value=t.alt_dunker_date||'';
   document.getElementById('f-arwop').value=t.alt_rwo_pay||'unpaid';document.getElementById('f-aapbap').value=t.alt_apba_pay||'unpaid';
-  document.getElementById('f-kw-loc').checked=!!t.kw_location;document.getElementById('f-kw-duval').checked=!!t.kw_duval;
-  document.getElementById('f-kw-duvalp').value=t.kw_duval_pay||'unpaid';
   buildCrewRows(t.crew);buildRRG(t);document.getElementById('team-modal').classList.add('open');
 }
 function closeModal(){document.getElementById('team-modal').classList.remove('open');}
