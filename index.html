@@ -205,6 +205,8 @@ button,input,select{font-family:inherit;}
 .pc-tname-main{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1.5px;color:#111;line-height:1.1;}
 .pc-cls-main{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;background:#111;color:#fff;padding:3px 10px;border-radius:4px;margin-top:4px;}
 .pc-boat{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;flex-shrink:0;}
+.pc-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.pc-logo-img{height:40px;width:auto;}
 .pc-org-row{margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #111;}
 .pc-org{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:#555;line-height:1;}
 .pc-evtlbl{font-size:10px;color:#888;letter-spacing:.5px;margin-top:1px;}
@@ -366,6 +368,9 @@ button,input,select{font-family:inherit;}
         <div class="field"><label>Notes</label><input type="text" id="f-nt" placeholder="Optional"></div>
       </div>
 
+      <div class="msec">Race Registration &amp; Entry Fee</div>
+      <div class="race-reg-grid" id="rrg"></div>
+
       <div class="msec">Driver</div>
       <div class="fg2">
         <div class="field"><label>Name</label><input type="text" id="f-dn" placeholder="Jake Harmon"></div>
@@ -423,9 +428,6 @@ button,input,select{font-family:inherit;}
         <div id="crew-rows"></div>
         <button class="btn-addcrew" onclick="addCrewRow()">+ Add crew member</button>
       </div>
-
-      <div class="msec">Race Registration &amp; Entry Fee</div>
-      <div class="race-reg-grid" id="rrg"></div>
     </div>
     <div class="modal-ftr">
       <div class="modal-ftr-l" id="meid"></div>
@@ -455,7 +457,7 @@ button,input,select{font-family:inherit;}
 <script>
 const GH_OWNER='dylanfostercoxgp';
 const GH_REPO='rwo-registration';
-const GH_TOKEN='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';
+const GH_TOKEN='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';
 const APP_PW='rwo2026';
 const DB_FILE='data.json';
 const CLASSES=['Super Cat','Super Stock','Class 1','Factory Stock','Super Vee','Modified V','Bracket Class 2','Bracket Class 3','Bracket Class 4','Bracket Class 5','Bracket Class 6','Bracket Class 7','Cat 300','Extreme'];
@@ -766,7 +768,7 @@ function buildPrintHTML(t){
       <div class="pc-boat" style="background:${bc};print-color-adjust:exact;-webkit-print-color-adjust:exact;">${t.boatnum||'?'}</div>
     </div>
     <div class="pc-org-row">
-      <div class="pc-org">Race World Offshore</div>
+      <div class="pc-logo-row"><img class="pc-logo-img" src="https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png" alt="Race World Offshore" onerror="this.style.display='none'"><div class="pc-org">Race World Offshore</div></div>
       <div class="pc-evtlbl">${evtLbl}</div>
     </div>
     <div class="pc-mempaid">
@@ -779,7 +781,7 @@ function buildPrintHTML(t){
     ${crewSec}
     <div class="pc-pay"><div class="pc-pay-hdr" style="background:#111 !important;color:#fff !important;">Entry Fee &mdash; Payment Status Per Race</div><div class="pc-pay-grid">${(DB.races||[]).map(r=>`<div class="pc-pay-cell"><div class="pc-pay-race">${r.name}</div>${payStatus(r.id)}</div>`).join('')}</div></div>
     ${verifySec}
-    <div class="pc-ftr"><div class="pc-ftr-note">Printed ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div><div class="pc-ftr-logo">RWO</div></div>`;
+    <div class="pc-ftr"><div class="pc-ftr-note">Printed ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div><div class="pc-ftr-logo"><img src="https://raceworldoffshore.com/wp-content/uploads/2026/03/rwo2.png" alt="RWO" style="height:18px;width:auto;opacity:.5;" onerror="this.outerHTML='RWO'"></div></div>`;
 }
 
 function doPrint(id){
