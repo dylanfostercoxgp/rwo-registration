@@ -420,8 +420,8 @@
           "payment": "unpaid"
         },
         "michigancity": {
-          "registered": false,
-          "payment": "unpaid"
+          "registered": true,
+          "payment": "paid"
         },
         "clearwater": {
           "registered": false,
@@ -432,7 +432,7 @@
           "payment": "unpaid"
         }
       },
-      "updated": "2026-04-13T19:56:32.164Z",
+      "updated": "2026-04-14T16:10:41.523Z",
       "id": "team_1776110168975"
     },
     {
